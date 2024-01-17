@@ -6,7 +6,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 /**
- * 本月业绩中的五条信息
+ * 本月业绩中的条信息
  * 每个pos机就是一个商户
  */
 @Data

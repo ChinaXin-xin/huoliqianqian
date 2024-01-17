@@ -86,7 +86,7 @@ public interface CommercialTenantOrderZFMapper extends BaseMapper<CommercialTena
             "    AND DATE(createtime) = DATE(#{today}) \n" +
             "    GROUP BY rrn\n" +
             ") AS grouped;")
-    BigDecimal selectBySnTodayMoney(@Param("sn") String sn, @Param("termModel") String termModel, @Param("today")Date today);
+    BigDecimal selectBySnTodayMoney (@Param("sn") String sn, @Param("termModel") String termModel, @Param("today")Date today);
 
     @Select("SELECT SUM(amount) FROM (\n" +
             "    SELECT rrn, amount FROM commercial_tenant_order_zf \n" +
