@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="xin.admin.mapper.membershipManagement.UserScoreDetailMapper">
+    <select id="queryUserScoreDetailMsgList"
+            resultType="xin.admin.domain.membershipManagement.UserScoreDetail" parameterType="map">
+        SELECT * FROM user_score_details
+        WHERE 1=1
+        <if test="userScoreDetail != null">
+            <if test="userScoreDetail.memberPhone != null and userScoreDetail.memberPhone != ''">
+                AND member_phone LIKE CONCAT('%', #{userScoreDetail.memberPhone}, '%')
+            </if>
+        </if>
+        <if test="userScoreDetailId != null">
+            AND id = #{userScoreDetailId}
+        </if>
+        LIMIT #{quantity} OFFSET #{offset}
+    </select>
+
+    <select id="queryUserScoreDetailMsgListCount" resultType="java.lang.Integer"  parameterType="map">
+        SELECT count(*) FROM user_score_details
+        WHERE 1=1
+        <if test="userScoreDetail != null">
+            <if test="userScoreDetail.memberPhone != null and userScoreDetail.memberPhone != ''">
+                AND member_phone LIKE CONCAT('%', #{userScoreDetail.memberPhone}, '%')
+            </if>
+        </if>
+        <if test="userScoreDetailId != null">
+            AND id = #{userScoreDetailId}
+        </if>
+    </select>
+</mapper>

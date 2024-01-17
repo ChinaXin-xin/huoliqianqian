@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="xin.weixinBackground.mapper.commodityDetails.CommodityDetailsMapper">
+
+    <select id="selectRandomCommodities" resultType="xin.weixinBackground.domain.commodityDetails.CommodityDetails">
+        SELECT *
+        FROM wx_commodity_details
+        ORDER BY RAND()
+            LIMIT #{count}
+    </select>
+
+
+</mapper>

@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="xin.admin.mapper.earningsManagenment.UserScoreMapper">
+    <select id="selectUserScoreWithUserInfo" resultType="xin.admin.domain.earningsManagenment.UserScore">
+        SELECT
+        us.id,
+        us.user_id,
+        su.name,
+        su.phone,
+        su.myself_number as myselfNumber,
+        us.reward,
+        us.machine_sn,
+        us.merchant_name,
+        us.detail,
+        us.time
+        FROM
+        user_score us
+        LEFT JOIN
+        sys_user su ON us.user_id = su.id
+        <where>
+            <if test="userScore != null">
+                <if test="userScore.phone != null and userScore.phone != ''">
+                    AND su.phone LIKE CONCAT('%', #{userScore.phone}, '%')
+                </if>
+                <if test="userScore.name != null and userScore.name != ''">
+                    AND su.name LIKE CONCAT('%', #{userScore.name}, '%')
+                </if>
+            </if>
+            <if test="query.startTime != null">
+                AND us.time &gt;= #{query.startTime}
+            </if>
+            <if test="query.endTime != null">
+                AND us.time &lt;= #{query.endTime}
+            </if>
+        </where>
+    </select>
+
+
+    <select id="selectUserScoreWithUserInfoCount" resultType="java.lang.Integer">
+        SELECT
+        COUNT(*)
+        FROM
+        user_score us
+        LEFT JOIN
+        sys_user su ON us.user_id = su.id
+        <where>
+            <if test="userScore != null">
+                <if test="userScore.phone != null and userScore.phone != ''">
+                    AND su.phone LIKE CONCAT('%', #{userScore.phone}, '%')
+                </if>
+                <if test="userScore.name != null and userScore.name != ''">
+                    AND su.name LIKE CONCAT('%', #{userScore.name}, '%')
+                </if>
+            </if>
+            <if test="query.startTime != null">
+                AND us.time &gt;= #{query.startTime}
+            </if>
+            <if test="query.endTime != null">
+                AND us.time &lt;= #{query.endTime}
+            </if>
+        </where>
+    </select>
+
+
+</mapper>

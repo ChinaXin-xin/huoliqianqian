@@ -1,0 +1,10 @@
+spring:
+  profiles:
+    active: test
+
+weixin:
+  pay:
+    appid: wx2b213ad5e5c4c2a8
+    mchid: 1666131252
+    secret: 861b1c6e6e1be29cb4c19469d82e8d9b
+    notifyurl: 支付回调地址

@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="xin.admin.mapper.membershipManagement.UserWithdrawManagementMapper">
+    <select id="selectAll" resultType="xin.admin.domain.membershipManagement.UserWithdrawManagement">
+        SELECT
+            uwm.id,
+            uwm.user_authentication_info_id,
+            uai.member_name,
+            uai.member_phone,
+            uai.bank_branch AS bankBranch,
+            uai.bank_card AS bankCard,
+            uwm.money,
+            uwm.withdraw_type AS withdrawType,
+            uwm.withdraw_time AS withdrawTime,
+            uwm.approval_time AS approvalTime,
+            uwm.remark,
+            uwm.status
+        FROM
+            user_withdraw_management uwm
+                JOIN
+            user_authentication_info uai ON uwm.user_authentication_info_id = uai.id
+    </select>
+    <select id="selectPage" resultType="xin.admin.domain.membershipManagement.UserWithdrawManagement" parameterType="map">
+        SELECT
+        uwm.id,
+        uwm.user_authentication_info_id,
+        uai.member_name,
+        uai.member_phone,
+        uai.bank_branch AS bankBranch,
+        uai.bank_card AS bankCard,
+        uwm.money,
+        uwm.withdraw_type AS withdrawType,
+        uwm.withdraw_time AS withdrawTime,
+        uwm.approval_time AS approvalTime,
+        uwm.remark,
+        uwm.status
+        FROM
+        user_withdraw_management uwm
+        JOIN
+        user_authentication_info uai ON uwm.user_authentication_info_id = uai.uid
+        where 1=1
+        <if test="userWithdrawManagement!=null">
+            <if test="userWithdrawManagement.memberPhone!=null and userWithdrawManagement.memberPhone!=''">
+                AND member_phone LIKE CONCAT('%', #{userWithdrawManagement.memberPhone}, '%')
+            </if>
+            <if test="userWithdrawManagement.memberName!=null and userWithdrawManagement.memberName!=''">
+                AND member_name LIKE CONCAT('%', #{userWithdrawManagement.memberName}, '%')
+            </if>
+            <if test="userWithdrawManagement.withdrawType!=null and userWithdrawManagement.withdrawType!=''">
+                AND withdraw_type LIKE CONCAT('%', #{userWithdrawManagement.withdrawType}, '%')
+            </if>
+            <if test="userWithdrawManagement.status!=null">
+                AND uwm.status = #{userWithdrawManagement.status}
+            </if>
+        </if>
+        ORDER BY uwm.id DESC
+        LIMIT #{quantity} OFFSET #{offset}
+    </select>
+    <select id="selectPageCount" resultType="java.lang.Integer" parameterType="map">
+        SELECT
+        COUNT(*)
+        FROM
+        user_withdraw_management uwm
+        JOIN
+        user_authentication_info uai ON uwm.user_authentication_info_id = uai.id
+        where 1=1
+        <if test="userWithdrawManagement!=null">
+            <if test="userWithdrawManagement.memberPhone!=null and userWithdrawManagement.memberPhone!=''">
+                AND member_phone LIKE CONCAT('%', #{userWithdrawManagement.memberPhone}, '%')
+            </if>
+            <if test="userWithdrawManagement.memberName!=null and userWithdrawManagement.memberName!=''">
+                AND member_name LIKE CONCAT('%', #{userWithdrawManagement.memberName}, '%')
+            </if>
+            <if test="userWithdrawManagement.withdrawType!=null and userWithdrawManagement.withdrawType!=''">
+                AND withdraw_type LIKE CONCAT('%', #{userWithdrawManagement.withdrawType}, '%')
+            </if>
+            <if test="userWithdrawManagement.status!=null">
+                AND uwm.status = #{userWithdrawManagement.status}
+            </if>
+        </if>
+    </select>
+    <select id="mySelectById" resultType="xin.admin.domain.membershipManagement.UserWithdrawManagement">
+        SELECT
+        uwm.id,
+        uwm.user_authentication_info_id,
+        uai.member_name,
+        uai.member_phone,
+        uai.bank_branch AS bankBranch,
+        uai.bank_card AS bankCard,
+        uwm.money,
+        uwm.withdraw_type AS withdrawType,
+        uwm.withdraw_time AS withdrawTime,
+        uwm.approval_time AS approvalTime,
+        uwm.remark,
+        uwm.status
+        FROM
+        user_withdraw_management uwm
+        JOIN
+        user_authentication_info uai ON uwm.user_authentication_info_id = uai.id
+        where 1=1
+        <if test="id!=null">
+            AND uwm.id=#{id}
+        </if>
+    </select>
+</mapper>

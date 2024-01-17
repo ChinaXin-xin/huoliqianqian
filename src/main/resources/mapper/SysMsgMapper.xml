@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="xin.admin.mapper.contentManagement.SysMsgMapper">
+    <select id="selectPaging" resultType="xin.admin.domain.contentManagement.SysMsg" parameterType="map">
+        SELECT * FROM sys_msg
+        WHERE 1=1
+        <if test="sysMsg != null">
+            <if test="sysMsg.id!=null">
+                AND id=#{sysMsg.id}
+            </if>
+            <if test="sysMsg.description != null and sysMsg.description !=''">
+                AND description LIKE CONCAT('%', #{sysMsg.description}, '%')
+            </if>
+            <if test="sysMsg.status != null">
+                AND status=#{sysMsg.status}
+            </if>
+        </if>
+        LIMIT #{quantity} OFFSET #{offset}
+    </select>
+
+    <select id="selectPagingCount" resultType="java.lang.Integer" parameterType="map">
+        SELECT COUNT(*) FROM sys_msg
+        WHERE 1=1
+        <if test="sysMsg != null">
+            <if test="sysMsg.id!=null">
+                AND id=#{sysMsg.id}
+            </if>
+            <if test="sysMsg.description != null and sysMsg.description !=''">
+                AND description LIKE CONCAT('%', #{sysMsg.description}, '%')
+            </if>
+            <if test="sysMsg.status != null">
+                AND status=#{sysMsg.status}
+            </if>
+        </if>
+    </select>
+
+</mapper>

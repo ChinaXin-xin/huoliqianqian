@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="xin.admin.mapper.UserMapper">
+
+    <select id="queryCommonUserMsgCount" resultType="integer" parameterType="map">
+        SELECT
+            COUNT(*)
+        FROM
+        sys_user
+        <where>
+            <if test="user != null">
+                <if test="user.userName != null and user.userName != ''">
+                    AND user_name = #{user.userName}
+                </if>
+                <if test="user.name != null and user.name != ''">
+                    AND name LIKE CONCAT('%', #{user.name}, '%')
+                </if>
+                <if test="user.myselfNumber != null and user.myselfNumber != ''">
+                    AND myself_number = #{user.myselfNumber}
+                </if>
+                <if test="user.level != null and user.level != ''">
+                    AND level = #{user.level}
+                </if>
+                <if test="user.manualLevel != null and user.manualLevel != ''">
+                    AND manual_level = #{user.manualLevel}
+                </if>
+                <if test="user.phone != null and user.phone != ''">
+                    AND phone = #{user.phone}
+                </if>
+                <if test="user.isAuthentication != null">
+                    AND is_authentication = #{user.isAuthentication}
+                </if>
+                <if test="user.referrerName != null and user.referrerName != ''">
+                    AND referrer_name LIKE CONCAT('%', #{user.referrerName}, '%')
+                </if>
+                <if test="user.referrerNumber != null and user.referrerNumber != ''">
+                    AND referrer_number = #{user.referrerNumber}
+                </if>
+                <if test="user.referrerLevel != null and user.referrerLevel != ''">
+                    AND referrer_level = #{user.referrerLevel}
+                </if>
+                <if test="user.storage != null">
+                    AND storage = #{user.storage}
+                </if>
+                <if test="user.stockRemoval != null">
+                    AND stock_removal = #{user.stockRemoval}
+                </if>
+                <if test="user.activatedMachineryCount != null">
+                    AND activated_machinery_count = #{user.activatedMachineryCount}
+                </if>
+                <if test="user.inactiveMachineryCount != null">
+                    AND inactive_machinery_count = #{user.inactiveMachineryCount}
+                </if>
+                <if test="user.merchantTransferIn != null">
+                    AND merchant_transfer_in = #{user.merchantTransferIn}
+                </if>
+                <if test="user.merchantTransferOut != null">
+                    AND merchant_transfer_out = #{user.merchantTransferOut}
+                </if>
+                <if test="user.myPoints != null">
+                    AND my_points = #{user.myPoints}
+                </if>
+                <if test="user.referralReward != null">
+                    AND referral_reward = #{user.referralReward}
+                </if>
+                <if test="user.profitSharingReward != null">
+                    AND profit_sharing_reward = #{user.profitSharingReward}
+                </if>
+                <if test="user.transactionVolume != null">
+                    AND transaction_volume = #{user.transactionVolume}
+                </if>
+                <if test="user.status != null and user.status != ''">
+                    AND status LIKE CONCAT('%', #{user.status}, '%')
+                </if>
+                <if test="user.userType != null and user.userType != ''">
+                    AND user_type = #{user.userType}
+                </if>
+                <if test="user.createBy != null">
+                    AND create_by = #{user.createBy}
+                </if>
+                <if test="user.createTime != null">
+                    AND create_time = #{user.createTime}
+                </if>
+                <if test="user.updateBy != null">
+                    AND update_by = #{user.updateBy}
+                </if>
+                <if test="user.updateTime != null">
+                    AND update_time = #{user.updateTime}
+                </if>
+                <if test="user.delFlag != null">
+                    AND del_flag = #{user.delFlag}
+                </if>
+                <if test="user.version != null and user.version != ''">
+                    AND version = #{user.version}
+                </if>
+            </if>
+        </where>
+    </select>
+
+    <select id="queryCommonUserMsgList" resultType="xin.common.domain.User" parameterType="map">
+        SELECT
+        id,
+        user_name,
+        password,
+        name,
+        myself_number,
+        level,
+        manual_level,
+        expire_date,
+        time,
+        phone,
+        is_authentication,
+        referrer_name,
+        referrer_number,
+        referrer_level,
+        storage,
+        stock_removal,
+        activated_machinery_count,
+        inactive_machinery_count,
+        merchant_transfer_in,
+        merchant_transfer_out,
+        my_points,
+        referral_reward,
+        profit_sharing_reward,
+        transaction_volume,
+        status,
+        user_type,
+        create_by,
+        create_time,
+        update_by,
+        update_time,
+        del_flag,
+        version,
+        nickname
+        FROM
+        sys_user
+        <where>
+            <if test="user != null">
+                <if test="user.userName != null and user.userName != ''">
+                    AND user_name = #{user.userName}
+                </if>
+                <if test="user.name != null and user.name != ''">
+                    AND name LIKE CONCAT('%', #{user.name}, '%')
+                </if>
+                <if test="user.myselfNumber != null and user.myselfNumber != ''">
+                    AND myself_number = #{user.myselfNumber}
+                </if>
+                <if test="user.level != null and user.level != ''">
+                    AND level = #{user.level}
+                </if>
+                <if test="user.manualLevel != null and user.manualLevel != ''">
+                    AND manual_level = #{user.manualLevel}
+                </if>
+                <if test="user.phone != null and user.phone != ''">
+                    AND phone = #{user.phone}
+                </if>
+                <if test="user.isAuthentication != null">
+                    AND is_authentication = #{user.isAuthentication}
+                </if>
+                <if test="user.referrerName != null and user.referrerName != ''">
+                    AND referrer_name LIKE CONCAT('%', #{user.referrerName}, '%')
+                </if>
+                <if test="user.referrerNumber != null and user.referrerNumber != ''">
+                    AND referrer_number = #{user.referrerNumber}
+                </if>
+                <if test="user.referrerLevel != null and user.referrerLevel != ''">
+                    AND referrer_level = #{user.referrerLevel}
+                </if>
+                <if test="user.storage != null">
+                    AND storage = #{user.storage}
+                </if>
+                <if test="user.stockRemoval != null">
+                    AND stock_removal = #{user.stockRemoval}
+                </if>
+                <if test="user.activatedMachineryCount != null">
+                    AND activated_machinery_count = #{user.activatedMachineryCount}
+                </if>
+                <if test="user.inactiveMachineryCount != null">
+                    AND inactive_machinery_count = #{user.inactiveMachineryCount}
+                </if>
+                <if test="user.merchantTransferIn != null">
+                    AND merchant_transfer_in = #{user.merchantTransferIn}
+                </if>
+                <if test="user.merchantTransferOut != null">
+                    AND merchant_transfer_out = #{user.merchantTransferOut}
+                </if>
+                <if test="user.myPoints != null">
+                    AND my_points = #{user.myPoints}
+                </if>
+                <if test="user.referralReward != null">
+                    AND referral_reward = #{user.referralReward}
+                </if>
+                <if test="user.profitSharingReward != null">
+                    AND profit_sharing_reward = #{user.profitSharingReward}
+                </if>
+                <if test="user.transactionVolume != null">
+                    AND transaction_volume = #{user.transactionVolume}
+                </if>
+                <if test="user.status != null and user.status != ''">
+                    AND status LIKE CONCAT('%', #{user.status}, '%')
+                </if>
+                <if test="user.userType != null and user.userType != ''">
+                    AND user_type = #{user.userType}
+                </if>
+                <if test="user.createBy != null">
+                    AND create_by = #{user.createBy}
+                </if>
+                <if test="user.createTime != null">
+                    AND create_time = #{user.createTime}
+                </if>
+                <if test="user.updateBy != null">
+                    AND update_by = #{user.updateBy}
+                </if>
+                <if test="user.updateTime != null">
+                    AND update_time = #{user.updateTime}
+                </if>
+                <if test="user.delFlag != null">
+                    AND del_flag = #{user.delFlag}
+                </if>
+                <if test="user.version != null and user.version != ''">
+                    AND version = #{user.version}
+                </if>
+            </if>
+        </where>
+        LIMIT #{pageNumber}, #{quantity}
+    </select>
+
+    <update id="changePassword">
+        UPDATE sys_user
+        <set>
+            password = #{user.password}
+        </set>
+        <where>
+            <choose>
+                <when test="user.userName != null and user.userName != ''">
+                    user_name = #{user.userName}
+                </when>
+                <otherwise>
+                    <if test="user.phone != null and user.phone != ''">
+                        phone = #{user.phone}
+                    </if>
+                </otherwise>
+            </choose>
+        </where>
+    </update>
+
+</mapper>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="xin.admin.mapper.earningsManagenment.SysReferralRewardMapper">
+    <select id="selectPageWithUser" resultType="xin.admin.domain.earningsManagenment.SysReferralReward">
+        SELECT srr.*, u.name, u.phone, u.myself_number
+        FROM sys_referral_reward srr
+        LEFT JOIN sys_user u ON srr.user_id = u.id
+        <where>
+            ${ew.sqlSegment}
+        </where>
+    </select>
+</mapper>

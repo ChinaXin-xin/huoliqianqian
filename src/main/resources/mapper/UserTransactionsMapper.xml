@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="xin.admin.mapper.membershipManagement.UserTransactionsMapper">
+    <select id="selectPaging" resultType="xin.admin.domain.membershipManagement.UserTransactions" parameterType="map">
+        SELECT * FROM user_transactions
+        WHERE 1=1
+        <if test="userTransactions != null">
+            <if test="userTransactions.type != null and userTransactions.type != ''">
+                AND type = #{userTransactions.type}
+            </if>
+            <if test="userTransactions.memberPhone != null and userTransactions.memberPhone != ''">
+                AND member_phone LIKE CONCAT('%', #{userTransactions.memberPhone}, '%')
+            </if>
+        </if>
+        LIMIT #{quantity} OFFSET #{offset}
+    </select>
+
+
+    <select id="selectPagingCount" resultType="java.lang.Integer" parameterType="map">
+        SELECT count(*) FROM user_transactions
+        WHERE 1=1
+        <if test="userTransactions != null">
+            <if test="userTransactions.type != null and userTransactions.type != ''">
+                AND type = #{userTransactions.type}
+            </if>
+            <if test="userTransactions.memberPhone != null and userTransactions.memberPhone != ''">
+                AND member_phone LIKE CONCAT('%', #{userTransactions.memberPhone}, '%')
+            </if>
+        </if>
+    </select>
+
+
+</mapper>

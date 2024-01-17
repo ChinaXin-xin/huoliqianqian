@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="xin.admin.mapper.membershipManagement.UserAuthenticationInfoMapper">
+    <select id="list" resultType="xin.admin.domain.membershipManagement.UserAuthenticationInfo" parameterType="map">
+        SELECT * FROM user_authentication_info
+        WHERE 1=1
+        <if test="userAuthenticationInfo != null">
+            <if test="userAuthenticationInfo.memberPhone != null and userAuthenticationInfo.memberPhone != ''">
+                AND member_phone LIKE CONCAT('%', #{userAuthenticationInfo.memberPhone}, '%')
+            </if>
+            <if test="userAuthenticationInfo.status != null">
+                AND status=#{userAuthenticationInfo.status}
+            </if>
+        </if>
+
+        ORDER BY application_date DESC
+        LIMIT #{quantity} OFFSET #{offset}
+    </select>
+
+    <select id="listCount" resultType="java.lang.Integer" parameterType="map">
+        SELECT COUNT(*) FROM user_authentication_info
+        WHERE 1=1
+        <if test="userAuthenticationInfo != null">
+            <if test="userAuthenticationInfo.memberPhone != null and userAuthenticationInfo.memberPhone != ''">
+                AND member_phone LIKE CONCAT('%', #{userAuthenticationInfo.memberPhone}, '%')
+            </if>
+            <if test="userAuthenticationInfo.status != null">
+                AND status=#{userAuthenticationInfo.status}
+            </if>
+        </if>
+    </select>
+</mapper>

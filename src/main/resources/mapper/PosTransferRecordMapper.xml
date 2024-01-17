@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="xin.admin.mapper.fundsFlowManagement.PosTransferRecordMapper">
+    <select id="selectPosTransferRecord"
+            resultType="xin.admin.domain.fundsFlowManagement.PosTransferRecord">
+        SELECT *
+        FROM pos_transfer_record
+        <where>
+            <if test="query != null">
+                <if test="query.transferor != null and query.transferor != ''">
+                    AND transferor LIKE CONCAT('%', #{query.transferor}, '%')
+                </if>
+                <if test="query.recipient != null and query.recipient != ''">
+                    AND recipient LIKE CONCAT('%', #{query.recipient}, '%')
+                </if>
+                <if test="query.sn != null and query.sn != ''">
+                    AND sn LIKE CONCAT('%', #{query.sn}, '%')
+                </if>
+            </if>
+        </where>
+        ORDER BY transfer_time DESC
+    </select>
+
+    <select id="selectPosTransferRecordCount" resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        FROM pos_transfer_record
+        <where>
+            <if test="query != null">
+                <if test="query.transferor != null and query.transferor != ''">
+                    AND transferor LIKE CONCAT('%', #{query.transferor}, '%')
+                </if>
+                <if test="query.recipient != null and query.recipient != ''">
+                    AND recipient LIKE CONCAT('%', #{query.recipient}, '%')
+                </if>
+                <if test="query.sn != null and query.sn != ''">
+                    AND sn LIKE CONCAT('%', #{query.sn}, '%')
+                </if>
+            </if>
+        </where>
+    </select>
+</mapper>

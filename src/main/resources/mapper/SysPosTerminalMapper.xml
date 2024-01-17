@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="xin.admin.mapper.fundsFlowManagement.SysPosTerminalMapper">
+    <delete id="deleteByMachineNo" parameterType="java.lang.String">
+        DELETE
+        FROM sys_pos_terminal
+        WHERE machine_no = #{machineNo}
+          and clazz = #{clazz}
+    </delete>
+
+    <select id="selectSysPosTerminal" resultType="xin.admin.domain.fundsFlowManagement.SysPosTerminal" parameterType="map">
+        SELECT spt.*, su.id AS user_id, su.phone
+        FROM sys_pos_terminal spt
+        JOIN sys_user su ON spt.uid = su.id
+        <where>
+            <if test="query != null">
+                <if test="query.machineNo != null and query.machineNo != ''">
+                    AND spt.machine_no LIKE CONCAT('%', #{query.machineNo}, '%')
+                </if>
+                <if test="query.clazz != null and query.clazz != ''">
+                    AND spt.clazz LIKE CONCAT('%', #{query.clazz}, '%')
+                </if>
+                <if test="query.phone != null and query.phone != ''">
+                    AND su.phone LIKE CONCAT('%', #{query.phone}, '%')
+                </if>
+            </if>
+        </where>
+        AND spt.uid = 100
+        ORDER BY spt.update_time DESC
+    </select>
+    <select id="selectSysPosTerminalCount" resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        FROM sys_pos_terminal spt
+        JOIN sys_user su ON spt.uid = su.id
+        <where>
+            <if test="query != null">
+                <if test="query.machineNo != null and query.machineNo != ''">
+                    AND spt.machine_no LIKE CONCAT('%', #{query.machineNo}, '%')
+                </if>
+                <if test="query.clazz != null and query.clazz != ''">
+                    AND spt.clazz LIKE CONCAT('%', #{query.clazz}, '%')
+                </if>
+                <if test="query.phone != null and query.phone != ''">
+                    AND su.phone LIKE CONCAT('%', #{query.phone}, '%')
+                </if>
+            </if>
+        </where>
+        AND spt.uid = 100
+    </select>
+
+    <select id="selectSysPosTerminalTransferManagement" resultType="xin.admin.domain.fundsFlowManagement.SysPosTerminal" parameterType="map">
+        SELECT spt.*, su.id AS user_id, su.phone
+        FROM sys_pos_terminal spt
+        JOIN sys_user su ON spt.uid = su.id
+        <where>
+            <if test="query != null">
+                <if test="query.machineNo != null and query.machineNo != ''">
+                    AND spt.machine_no LIKE CONCAT('%', #{query.machineNo}, '%')
+                </if>
+                <if test="query.clazz != null and query.clazz != ''">
+                    AND spt.clazz LIKE CONCAT('%', #{query.clazz}, '%')
+                </if>
+                <if test="query.phone != null and query.phone != ''">
+                    AND su.phone LIKE CONCAT('%', #{query.phone}, '%')
+                </if>
+            </if>
+        </where>
+        AND spt.uid != 100
+        ORDER BY spt.update_time DESC
+    </select>
+    <select id="selectSysPosTerminalCountTransferManagement" resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        FROM sys_pos_terminal spt
+        JOIN sys_user su ON spt.uid = su.id
+        <where>
+            <if test="query != null">
+                <if test="query.machineNo != null and query.machineNo != ''">
+                    AND spt.machine_no LIKE CONCAT('%', #{query.machineNo}, '%')
+                </if>
+                <if test="query.clazz != null and query.clazz != ''">
+                    AND spt.clazz LIKE CONCAT('%', #{query.clazz}, '%')
+                </if>
+                <if test="query.phone != null and query.phone != ''">
+                    AND su.phone LIKE CONCAT('%', #{query.phone}, '%')
+                </if>
+            </if>
+        </where>
+        AND spt.uid != 100
+    </select>
+
+    <select id="selectByMachineNo" resultType="java.lang.Integer">
+        select COUNT(*) from sys_pos_terminal where machine_no=#{machineNo}
+    </select>
+    <select id="selectByMachineNoMsg" resultType="xin.common.domain.User">
+        SELECT su.*
+        FROM sys_pos_terminal spt
+        JOIN sys_user su ON spt.uid = su.id
+        <where>
+                AND spt.machine_no = #{machineNo}
+                AND spt.clazz = #{clazz}
+        </where>
+    </select>
+    <select id="selectByMachineNoToMachineMsg"
+            resultType="xin.admin.domain.fundsFlowManagement.SysPosTerminal">
+        SELECT spt.*
+        FROM sys_pos_terminal spt
+        JOIN sys_user su ON spt.uid = su.id
+        <where>
+            AND spt.machine_no = #{machineNo}
+            AND spt.clazz = #{clazz}
+        </where>
+    </select>
+
+    <select id="selectByUidToMyselfTypeMachineAlreadyActivate" resultType="xin.h5.domain.myselfMachine.MachineSnBelongUser">
+        SELECT
+        machine_no as sn,
+        type
+        FROM
+        sys_pos_terminal
+        WHERE
+        1=1 AND type != '3'
+        <if test="uid != null">
+            AND uid = #{uid}
+        </if>
+        <if test="sysPosTerminal != null">
+                AND clazz = #{sysPosTerminal.clazz}
+                <!--AND machine_no = #{sysPosTerminal.machineNo}-->
+        </if>
+    </select>
+
+    <select id="selectByUidToMyselfTypeMachineNotActivate" resultType="xin.h5.domain.myselfMachine.MachineSnBelongUser">
+        SELECT
+        machine_no as sn,
+        type
+        FROM
+        sys_pos_terminal
+        WHERE
+        1=1 AND type = '3'
+        <if test="uid != null">
+            AND uid = #{uid}
+        </if>
+        <if test="sysPosTerminal != null">
+            <if test="sysPosTerminal.clazz != null and sysPosTerminal.clazz != ''">
+                AND clazz = #{sysPosTerminal.clazz}
+            </if>
+            <if test="sysPosTerminal.machineNo != null and sysPosTerminal.machineNo != ''">
+                AND machine_no = #{sysPosTerminal.machineNo}
+            </if>
+        </if>
+    </select>
+    <select id="selectByMachineNoAndClazzToUser" resultType="xin.common.domain.User">
+        SELECT su.*
+        FROM sys_pos_terminal spt
+                 JOIN sys_user su ON spt.uid = su.id
+        WHERE spt.machine_no = #{machineNo} AND spt.clazz = #{clazz}
+    </select>
+    <select id="selectByMachineNoToMachineAndClazzMsg" resultType="xin.admin.domain.fundsFlowManagement.SysPosTerminal">
+        SELECT spt.*
+        FROM sys_pos_terminal spt
+        JOIN sys_user su ON spt.uid = su.id
+        <where>
+            <if test="machineNo != null and machineNo != ''">
+                AND spt.machine_no = #{machineNo}
+            </if>
+            <if test="clazz != null and clazz != ''">
+                AND clazz = #{clazz}
+            </if>
+        </where>
+    </select>
+
+
+</mapper>
