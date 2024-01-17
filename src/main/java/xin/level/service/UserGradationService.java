@@ -38,6 +38,20 @@ public class UserGradationService {
                 .collect(Collectors.toList());
     }
 
+    // 获取指定userName的直接下级，不包括自己
+    public List<String> getDirectDescendants(String userName) {
+        UserGradation parentUser = findUserByName(userName);
+        if (parentUser == null) {
+            return new ArrayList<>(); // 如果用户不存在，返回空列表
+        }
+
+        Integer parentId = parentUser.getId();
+        return userMap.values().stream()
+                .filter(user -> parentId.equals(user.getParentId()))
+                .map(UserGradation::getUserName)
+                .collect(Collectors.toList());
+    }
+
     // 查询用户的父节点
     public String getParentUserName(String userName) {
         return userMap.values().stream()
@@ -162,19 +176,7 @@ public class UserGradationService {
         return false;
     }
 
-    // 获取指定userName的直接下级，不包括自己
-    public List<String> getDirectDescendants(String userName) {
-        UserGradation parentUser = findUserByName(userName);
-        if (parentUser == null) {
-            return new ArrayList<>(); // 如果用户不存在，返回空列表
-        }
 
-        Integer parentId = parentUser.getId();
-        return userMap.values().stream()
-                .filter(user -> parentId.equals(user.getParentId()))
-                .map(UserGradation::getUserName)
-                .collect(Collectors.toList());
-    }
 
     // 查询指定userName的直属上级
     public String getDirectParent(String userName) {

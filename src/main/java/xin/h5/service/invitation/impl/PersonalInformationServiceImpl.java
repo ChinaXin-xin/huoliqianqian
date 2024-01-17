@@ -819,6 +819,7 @@ public class PersonalInformationServiceImpl implements PersonalInformationServic
     }
 
 
+
     /**
      * 查询指定月业绩中的累计业绩中的日维度，查询自己所有的下级，不包括自己
      *
@@ -840,6 +841,38 @@ public class PersonalInformationServiceImpl implements PersonalInformationServic
         // 生成从createTime到今天的所有日期
         List<Date> allDates = getDatesBetweenDay(createTime, today);
 
+        Collections.sort(allDates, new Comparator<Date>() {
+            @Override
+            public int compare(Date date1, Date date2) {
+                // 降序排列
+                return date2.compareTo(date1);
+            }
+        });
+
+        // 多少天就有多少条
+        query.setCount(allDates.size());
+
+        int pageNumber = query.getPageNumber(); // 当前页码
+        int quantity = query.getQuantity(); // 每页显示的记录数
+        int totalSize = allDates.size(); // 总记录数
+
+
+        // 计算最大页数
+        int maxPageNumber = (totalSize + quantity - 1) / quantity;
+
+        // 检查请求的页码是否超过最大页数
+        if (pageNumber > maxPageNumber) {
+            // 如果超过了，返回空的结果集
+            query.setResultList(new ArrayList<>());
+        } else {
+            // 计算当前页的起始索引和结束索引
+            int startIndex = (pageNumber - 1) * quantity;
+            int endIndex = Math.min(startIndex + quantity, totalSize);
+
+            // 获取当前页的子列表
+            allDates = allDates.subList(startIndex, endIndex);
+        }
+
         //累计伙伴
         Integer accumulativeTotalPartner = getOurThisMonthDealMoneyAndOther().getData().getAccumulativeTotalPartner();
 
@@ -855,8 +888,9 @@ public class PersonalInformationServiceImpl implements PersonalInformationServic
             //当日新增机器
             Integer todayNewPos = 0;
 
-            //新增商户（pos机），自己和所有下级的
-            List<String> userAndDescendants = userGradationService.getUserAndDescendants(loginUser.getUser().getUserName());
+            //新增商户（pos机），自己和直属下级
+            List<String> userAndDescendants = userGradationService.getDirectDescendants(loginUser.getUser().getUserName());
+            userAndDescendants.add(curUser.getUserName());
             for (String un : userAndDescendants) {
                 todayNewPos += selectNewlyIncreasedPosNumToday(un, queryDate);
                 //当日新增小伙伴
@@ -890,8 +924,6 @@ public class PersonalInformationServiceImpl implements PersonalInformationServic
 
         sortDealPerformanceByTimeDescending(query.getResultList());
 
-        query.setCount(query.getResultList().size());
-        query.setResultList(query.getMyselfResultList());
         return new ResponseResult(200, "查询成功！", query);
     }
 
