@@ -34,6 +34,7 @@ public class UserServiceImpl implements UserService {
 
     /**
      * 获取用户等级，如果手动设置了，就返回手动设置的
+     *
      * @param curUser
      * @return
      */
@@ -70,6 +71,7 @@ public class UserServiceImpl implements UserService {
 
     /**
      * 获取用户真实等级
+     *
      * @param userId
      * @return
      */
@@ -87,7 +89,9 @@ public class UserServiceImpl implements UserService {
         if (userLevelList.size() < 2)
             userLevel = "V1";
         else {
-            if (userLevelList.get(0).getUpgradeVolume() > curUser.getTransactionVolume()) {
+            Float a = userLevelList.get(0).getUpgradeVolume();
+            Float b = curUser.getTransactionVolume();
+            if (a > b) {
                 userLevel = "V1";
             }
             for (int i = 1, size = userLevelList.size(); i < size; i++) {

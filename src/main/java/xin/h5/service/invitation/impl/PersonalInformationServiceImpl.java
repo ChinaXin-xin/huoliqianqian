@@ -560,8 +560,6 @@ public class PersonalInformationServiceImpl implements PersonalInformationServic
 
         sortDealPerformanceByTimeDescending(query.getResultList());
 
-        query.setCount(query.getResultList().size());
-        query.setResultList(query.getMyselfResultList());
         return new ResponseResult(200, "查询成功！", query);
     }
 
@@ -796,8 +794,6 @@ public class PersonalInformationServiceImpl implements PersonalInformationServic
 
         sortDealPerformanceByTimeDescending(query.getResultList());
 
-        query.setCount(query.getResultList().size());
-        query.setResultList(query.getMyselfResultList());
         return new ResponseResult(200, "查询成功！", query);
     }
 
