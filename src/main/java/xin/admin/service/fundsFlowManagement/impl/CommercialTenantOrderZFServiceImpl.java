@@ -95,19 +95,16 @@ public class CommercialTenantOrderZFServiceImpl implements CommercialTenantOrder
             ctoz.setOAmount(ctoz.getAmount());
             ctoz.setLogno(ctoz.getCreatetime() + ctoz.getRrn());
 
-
-            // 防止重复通知
-            if (commercialTenantOrderZFMapper.selectByRrnIsExist(ctoz.getRrn()) == 0) {
-                // 更新该pos机的当日交易信息
-                performanceService.periodicUpdate(ctoz);
-            }
-
             //保存交易流水
             commercialTenantOrderZFMapper.insert(ctoz);
 
 
-            //判断是否是交易的成功
-            if (isDealSucceed(ctoz)) {
+            //判断是否是交易的成功，并且是第一次推送
+            if (isDealSucceed(ctoz) && commercialTenantOrderZFMapper.selectByRrnIsExist(ctoz.getRrn()) == 0) {
+
+                // 更新该pos机的当日交易信息
+                performanceService.periodicUpdate(ctoz);
+
                 //根据交易流水进行分润
                 userService.shareBenefit(ctoz);
             }
@@ -117,9 +114,9 @@ public class CommercialTenantOrderZFServiceImpl implements CommercialTenantOrder
 
     @Override
     public ResponseResult<CommercialTenantOrderZFRequestQuery> list(CommercialTenantOrderZFRequestQuery query) {
+
         // 构建查询条件
         QueryWrapper<CommercialTenantOrderZF> wrapper = new QueryWrapper<>();
-
 
         if (query.getCommercialTenantOrderZF() != null) {
             // 检查tranCode和termSn是否不为空

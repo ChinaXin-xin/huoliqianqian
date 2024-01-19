@@ -31,7 +31,7 @@ public class AuthenticationEntryPointImpl implements AuthenticationEntryPoint {
             responseResult = new ResponseResult(HttpStatus.UNAUTHORIZED.value(), "账户被锁定");
         } else {
             // 其他认证失败情况
-            responseResult = new ResponseResult(HttpStatus.UNAUTHORIZED.value(), "认证失败：" + authException.getMessage());
+            responseResult = new ResponseResult(HttpStatus.UNAUTHORIZED.value(), "登录已失效，请重新登录");
         }
 
         // 将错误信息转换为JSON并发送给客户端
