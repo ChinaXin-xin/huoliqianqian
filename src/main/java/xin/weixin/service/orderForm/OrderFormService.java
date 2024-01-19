@@ -1,9 +1,12 @@
 package xin.weixin.service.orderForm;
 
+import org.springframework.web.bind.annotation.RequestBody;
 import xin.admin.domain.ResponseResult;
 import xin.common.domain.CommonalityQuery;
 import xin.weixin.domain.orderForm.OrderFormList;
 import xin.weixin.domain.orderForm.OrderFormSub;
+
+import javax.servlet.http.HttpServletRequest;
 
 public interface OrderFormService {
 
@@ -13,8 +16,15 @@ public interface OrderFormService {
      * @param orderFormList
      * @return 返回订单号
      */
-    ResponseResult placeAnOrder(OrderFormList orderFormList);
+    ResponseResult placeAnOrder(OrderFormList orderFormList, HttpServletRequest request);
 
+    /**
+     * 根据订单号进行支付
+     *
+     * @param orderFormId
+     * @return 返回订单号
+     */
+    ResponseResult payByOrderFormId(@RequestBody String orderFormId, HttpServletRequest request);
 
     /**
      * 取消订单，用户取消支付时调用，或者订单超时时调用
@@ -52,6 +62,7 @@ public interface OrderFormService {
     /**
      * 根据订单装填，查询订单
      * 单状态 0：未完成  1：已完成  2：进行中  3：支付取消  4：超时取消  5：已退款  6：退款中
+     *
      * @param query
      * @param statusList
      * @return

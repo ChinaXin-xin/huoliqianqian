@@ -32,7 +32,7 @@ public interface CommoditySpecificationMapper extends BaseMapper<CommoditySpecif
      * @param cdi
      * @return
      */
-    @Select("select * from wx_commodity_specification where commodity_details_id = #{cdi} and id=#{id}")
+    @Select("select * from wx_commodity_specification where commodity_details_id = #{cdi} and id=#{id} ")
     List<CommoditySpecification> selectByCommodityDetailsIdAndSpecificationId(@Param("cdi") Integer cdi, @Param("id") Integer id);
 
     /**

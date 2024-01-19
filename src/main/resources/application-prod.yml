@@ -14,10 +14,16 @@ spring:
 mybatis-plus:
   mapper-locations: classpath*:/mapper/**/*.xml
 
-# 微信小程序的证书
-wxKeyPath: /www/wwwroot/www_rrthb_com_xin/certificate/apiclient_cert.p12
-wxPrivateCertPath: /www/wwwroot/www_rrthb_com_xin/certificate/apiclient_cert.pem
-wxPrivateKeyPath: /www/wwwroot/www_rrthb_com_xin/certificate/apiclient_key.pem
+wxpay:
+  mchId: "1666131252"
+  appId: "wx2b213ad5e5c4c2a8"
+  appSecret: "72b0ab089db22cc3c9a8e2fee3a5835a"
+  mchKey: "134679"
+  apiV3Key: "abcde12345abcde12345abcde12345ab"
+  certSerialNo: "7761F8E867C2B0EC4931E46CD59A49F6B6C9AB27"
+  wxKeyPath: "/www/wwwroot/www_rrthb_com_xin/certificate/apiclient_cert.p12"
+  wxPrivateCertPath: "/www/wwwroot/www_rrthb_com_xin/certificate/apiclient_cert.pem"
+  wxPrivateKeyPath: "/www/wwwroot/www_rrthb_com_xin/certificate/apiclient_key.pem"
 
 # 文件上传时用到的路径
 virtualFileDepositPath: /api/image/**

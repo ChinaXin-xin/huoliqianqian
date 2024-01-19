@@ -49,7 +49,7 @@ public class AliPayServiceImpl implements AliPayService {
     public R alipayTradeWapPay(SysH5Goods sysH5Goods) {
 
         // 创建的订单号
-        String orderFormId = CommonPrefix.h5OrderFormPrefix_ + Long.toString(idGeneratorSnowflake.snowflakeId());
+        String orderFormId = CommonPrefix.h5OrderFormPrefix_ + idGeneratorSnowflake.snowflakeId();
 
         // 库存中对应的商品信息
         SysH5Goods warehouse = sysH5GoodsMapper.selectById(sysH5Goods.getId());

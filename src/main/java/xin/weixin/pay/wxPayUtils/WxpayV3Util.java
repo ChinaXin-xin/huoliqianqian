@@ -1,4 +1,4 @@
-package xin.weixin.pay.utils;
+package xin.weixin.pay.wxPayUtils;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;

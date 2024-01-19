@@ -11,6 +11,8 @@ import xin.weixin.domain.orderForm.OrderFormList;
 import xin.weixin.domain.orderForm.OrderFormSub;
 import xin.weixin.service.orderForm.OrderFormService;
 
+import javax.servlet.http.HttpServletRequest;
+
 /**
  * 用户的下单请求处理
  */
@@ -27,8 +29,18 @@ public class OrderFormController {
      * @return
      */
     @PostMapping("/placeAnOrder")
-    public ResponseResult placeAnOrder(@RequestBody OrderFormList orderFormList) {
-        return orderFormService.placeAnOrder(orderFormList);
+    public ResponseResult placeAnOrder(@RequestBody OrderFormList orderFormList, HttpServletRequest request) {
+        return orderFormService.placeAnOrder(orderFormList, request);
+    }
+
+    /**
+     * 根据订单号进行支付
+     *
+     * @return
+     */
+    @PostMapping("/payByOrderFormId")
+    public ResponseResult payByOrderFormId(@RequestBody String orderFormId, HttpServletRequest request) {
+        return orderFormService.payByOrderFormId(orderFormId, request);
     }
 
     /**

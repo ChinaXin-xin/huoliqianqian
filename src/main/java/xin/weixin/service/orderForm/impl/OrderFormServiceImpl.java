@@ -22,12 +22,14 @@ import xin.weixin.domain.orderForm.OrderFormSub;
 import xin.weixin.domain.shoppingTrolley.ShoppingTrolley;
 import xin.weixin.mapper.orderForm.OrderFormMapper;
 import xin.weixin.mapper.shoppingTrolley.ShoppingTrolleyMapper;
+import xin.weixin.pay.wxPayUtils.WxPay;
 import xin.weixin.service.orderForm.OrderFormService;
 import xin.weixinBackground.domain.commodityDetails.CommodityDetails;
 import xin.weixinBackground.domain.commodityDetails.CommoditySpecification;
 import xin.weixinBackground.mapper.commodityDetails.CommodityDetailsMapper;
 import xin.weixinBackground.mapper.commodityDetails.CommoditySpecificationMapper;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
@@ -53,18 +55,48 @@ public class OrderFormServiceImpl implements OrderFormService {
     @Autowired
     ShoppingTrolleyMapper shoppingTrolleyMapper;
 
+    @Autowired
+    WxPay wxPay;
+
     // 订单超时时间，单位分钟，
     public static final Integer orderFormOvertime = 32;
 
     /**
      * 用户下单
      *
-     * @param orderFormList
-     * @return
+     * @param orderFormList 订单信息
+     * @return 微信小程序的支付密钥
      */
     @Override
     @Transactional
-    public ResponseResult placeAnOrder(OrderFormList orderFormList) {
+    public ResponseResult placeAnOrder(OrderFormList orderFormList, HttpServletRequest request) {
+        orderFormList.setOrderFormId(CommonPrefix.wxOrderFormPrefix_ + idGeneratorSnowflake.snowflakeId());
+        return payOrderForm(orderFormList, request);
+    }
+
+    /**
+     * 根据订单号进行支付
+     *
+     * @return
+     */
+    @Override
+    public ResponseResult payByOrderFormId(String orderFormId, HttpServletRequest request) {
+
+        // 从缓存中取出订单信息
+        JSONObject jsonObject = redisCache.getCacheObject(orderFormId);
+        OrderFormList orderFormList = jsonObject.toJavaObject(OrderFormList.class);
+
+        // 进行微信支付
+        JSONObject payKey = wxPay.pay(orderFormList, request);
+
+        return new ResponseResult(200, "创建订单成功！", payKey);
+    }
+
+    public ResponseResult payOrderForm(OrderFormList orderFormList, HttpServletRequest request) {
+
+        if (orderFormList.getShippingAddressId() == null) {
+            return new ResponseResult(400, "未选择地址信息！");
+        }
 
         User curUser = ((LoginUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUser();
 
@@ -74,11 +106,8 @@ public class OrderFormServiceImpl implements OrderFormService {
         orderFormList.setCreateTIme(new Date());
         List<OrderFormSub> orderFormsSubList = orderFormList.getOrderFormsSubList();
 
-        // 设置订单编号
-        orderFormList.setOrderFormId(CommonPrefix.wxOrderFormPrefix_ + idGeneratorSnowflake.snowflakeId());
 
         for (OrderFormSub orderFormSub : orderFormsSubList) {
-
 
             // 提交订单之后，删除购物车中对应的信息
             QueryWrapper<ShoppingTrolley> qw = new QueryWrapper<>();
@@ -129,14 +158,15 @@ public class OrderFormServiceImpl implements OrderFormService {
             log.info("用户{}，创建订单号为：{}", orderFormSub.getUserId(), orderFormSub.getOrderFormId());
         }
 
-
-        System.out.println("存入key：" + orderFormList.getOrderFormId());
-        System.out.println("存入value：" + orderFormList);
         // 添加进入订单缓存
         redisCache.setCacheObject(orderFormList.getOrderFormId(), orderFormList, orderFormOvertime, TimeUnit.MINUTES);
 
-        return new ResponseResult(200, "创建订单成功！", orderFormList.getOrderFormId());
+        // 进行微信支付
+        JSONObject payKey = wxPay.pay(orderFormList, request);
+
+        return new ResponseResult(200, "创建订单成功！", payKey);
     }
+
 
     @Scheduled(fixedRate = 60000)
     public void examineOrderOvertime() {
@@ -164,7 +194,7 @@ public class OrderFormServiceImpl implements OrderFormService {
      * 取消订单，用户取消支付或者订单超时时调用
      *
      * @param orderFormId 订单编号
-     * @param status      true为支付取消，false为订单超时取消
+     * @param status      true为支付取消（然后设置为未付款），false为订单超时取消
      * @return
      */
     @Override
@@ -181,7 +211,7 @@ public class OrderFormServiceImpl implements OrderFormService {
             }
 
             // 设置订单的状态
-            orderForm.setStatus(status ? 4 : 3);
+            orderForm.setStatus(status ? 0 : 4);
 
             // 删除缓存中的订单信息
             redisCache.deleteObject(orderFormId);
@@ -230,8 +260,8 @@ public class OrderFormServiceImpl implements OrderFormService {
 
             commoditySpecificationMapper.updateMarket(orderForm.getSpecificationId(), orderForm.getNumber());
 
-            // 设置状态，订单待发货
-            orderForm.setStatus(2);
+            // 设置状态，订单，已完成
+            orderForm.setStatus(1);
 
             // 更新数据库中的订单信息
             orderFormMapper.updateById(orderForm);
@@ -272,6 +302,13 @@ public class OrderFormServiceImpl implements OrderFormService {
                     orderFormSub.setCommodityDetails(commodityDetails);
                     orderFormList.getOrderFormsSubList().set(i, orderFormSub);
                 }
+                Collections.sort(orderFormList.getOrderFormsSubList(), new Comparator<OrderFormSub>() {
+                    @Override
+                    public int compare(OrderFormSub o1, OrderFormSub o2) {
+                        // 将o2和o1的位置对调来实现反向排序
+                        return o2.getId().compareTo(o1.getId());
+                    }
+                });
                 resultList.add(orderFormList);
             }
         }
@@ -309,6 +346,11 @@ public class OrderFormServiceImpl implements OrderFormService {
         return new ResponseResult<>(200, "查询成功！", query);
     }
 
+    /**
+     * 全部订单
+     * @param query
+     * @return
+     */
     @Override
     public ResponseResult<CommonalityQuery<OrderFormSub>> queryAllOrderForm(CommonalityQuery<OrderFormSub> query) {
         User curUser = ((LoginUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUser();
@@ -317,7 +359,7 @@ public class OrderFormServiceImpl implements OrderFormService {
         QueryWrapper<OrderFormSub> qw = new QueryWrapper<>();
         qw.eq("user_id", curUser.getId());
         qw.orderByDesc("id");
-
+        qw.notIn("status", 3, 4);
         Page<OrderFormSub> resultList = orderFormMapper.selectPage(page, qw);
         List<OrderFormSub> records = resultList.getRecords();
 
@@ -333,6 +375,16 @@ public class OrderFormServiceImpl implements OrderFormService {
 
             orderFormSub.setCommodityDetails(commodityDetails);
         }
+
+        Collections.sort(records, new Comparator<OrderFormSub>() {
+            @Override
+            public int compare(OrderFormSub o1, OrderFormSub o2) {
+                // 将o2和o1的位置对调来实现反向排序
+                return o2.getId().compareTo(o1.getId());
+            }
+        });
+
+
         query.setResultList(records);
         query.setCount(resultList.getTotal());
         return new ResponseResult<>(200, "查询成功！", query);
@@ -351,8 +403,8 @@ public class OrderFormServiceImpl implements OrderFormService {
         User curUser = ((LoginUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUser();
         Page<OrderFormSub> page = new Page<>(query.getPageNumber(), query.getQuantity());
         QueryWrapper<OrderFormSub> qw = new QueryWrapper<>();
-        qw.orderByDesc("id");
         qw.eq("user_id", curUser.getId());
+        qw.orderByDesc("id");
         qw.and(wrapper -> {
             for (int status : statusList) {
                 wrapper.or().eq("status", status);

@@ -12,5 +12,5 @@ public class CommonPrefix {
     /**
      * 微信小程序订单前缀
      */
-    public static final String wxOrderFormPrefix_ = "wxOrderFormPrefix_";
+    public static final String wxOrderFormPrefix_ = "wxOFP_";
 }

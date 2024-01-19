@@ -68,12 +68,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.POST, "/admin/bindMachineInformZF/add").permitAll() // 中付推送的绑机通知
                 .antMatchers(HttpMethod.POST, "/api/uploadBase64").permitAll() // 中付推送的绑机通知
                 .antMatchers(HttpMethod.POST, "/pro/homePage/getRandomRecommendedItems").permitAll() // 微信小程序首页好物推荐10条数据
+                .antMatchers(HttpMethod.POST, "/pro/pay/notify").permitAll() // 微信小程序首页好物推荐10条数据
+                .antMatchers("/pro/pay/notify").permitAll() // 微信小程序首页好物推荐10条数据
                 .antMatchers("/static/**").permitAll() // 允许对 /static/ 下的所有静态资源放行
                 .antMatchers("/admin/login").permitAll()  // 只有不认证的才可以访问
                 .antMatchers(HttpMethod.POST, "/pro/commodityClassification/select").permitAll()  // 查询所有分类
                 .antMatchers(HttpMethod.POST, "/pro/commodityClassification/selectByAllMsg/*").permitAll()  // 根据分类id查询
                 .antMatchers(HttpMethod.POST, "/admin/commodityDetail/selectByDetails").permitAll()  // 查询商品关键字
-
 
 
                 .antMatchers("/admin/register").anonymous()
