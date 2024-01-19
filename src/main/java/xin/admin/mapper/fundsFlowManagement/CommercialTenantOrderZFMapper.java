@@ -19,6 +19,9 @@ public interface CommercialTenantOrderZFMapper extends BaseMapper<CommercialTena
             ") AS grouped;\n")
     BigDecimal sumAmount();
 
+    @Select("SELECT COUNT(*) FROM commercial_tenant_order_zf WHERE rrn=#{rrn}")
+    int selectByRrnIsExist(@Param("rrn") String rrn);
+
     @Select("SELECT COUNT(*) FROM commercial_tenant_order_zf WHERE rrn = #{curRnn}")
     boolean existsByRrn(String curRnn);
 
@@ -31,7 +34,7 @@ public interface CommercialTenantOrderZFMapper extends BaseMapper<CommercialTena
     @Select("SELECT SUM(amount) FROM (\n" +
             "    SELECT rrn, amount FROM commercial_tenant_order_zf \n" +
             "    WHERE (sysRespCode = '00' OR sysRespCode = '10' OR sysRespCode = '11' OR sysRespCode IN ('A2', 'A4', 'A5', 'A6'))\n" +
-            "    AND termSn = #{sn}" +
+            "    AND termSn LIKE CONCAT('%', #{sn}, '%')" +
             "    AND termModel=#{termModel} \n" +
             "    AND STR_TO_DATE(createtime, '%Y-%m-%d') >= DATE_FORMAT(CURRENT_DATE ,'%Y-%m-01')\n" +
             "    GROUP BY rrn\n" +
@@ -47,7 +50,7 @@ public interface CommercialTenantOrderZFMapper extends BaseMapper<CommercialTena
     @Select("SELECT SUM(amount) FROM (\n" +
             "    SELECT rrn, amount FROM commercial_tenant_order_zf \n" +
             "    WHERE (sysRespCode = '00' OR sysRespCode = '10' OR sysRespCode = '11' OR sysRespCode IN ('A2', 'A4', 'A5', 'A6'))\n" +
-            "    AND termSn = #{sn}" +
+            "    AND termSn LIKE CONCAT('%', #{sn}, '%')" +
             "    AND termModel=#{termModel} \n" +
             "    GROUP BY rrn\n" +
             ") AS grouped;\n")
@@ -62,7 +65,7 @@ public interface CommercialTenantOrderZFMapper extends BaseMapper<CommercialTena
     @Select("SELECT COUNT(*) FROM (\n" +
             "    SELECT rrn, amount FROM commercial_tenant_order_zf \n" +
             "    WHERE (sysRespCode = '00' OR sysRespCode = '10' OR sysRespCode = '11' OR sysRespCode IN ('A2', 'A4', 'A5', 'A6'))\n" +
-            "    AND termSn = #{sn}\n" +
+            "    AND termSn LIKE CONCAT('%', #{sn}, '%')" +
             "    AND termModel=#{termModel} \n" +
             "    AND STR_TO_DATE(createtime, '%Y-%m-%d') >= DATE_FORMAT(CURRENT_DATE ,'%Y-%m-01')\n" +
             "    GROUP BY rrn\n" +
@@ -72,7 +75,7 @@ public interface CommercialTenantOrderZFMapper extends BaseMapper<CommercialTena
     @Select("SELECT SUM(amount) FROM (\n" +
             "    SELECT rrn, amount FROM commercial_tenant_order_zf \n" +
             "    WHERE (sysRespCode = '00' OR sysRespCode = '10' OR sysRespCode = '11' OR sysRespCode IN ('A2', 'A4', 'A5', 'A6'))\n" +
-            "    AND termSn = #{sn}" +
+            "    AND termSn LIKE CONCAT('%', #{sn}, '%')" +
             "    AND termModel=#{termModel} \n" +
             "    GROUP BY rrn\n" +
             ") AS grouped;\n")
@@ -81,17 +84,17 @@ public interface CommercialTenantOrderZFMapper extends BaseMapper<CommercialTena
     @Select("SELECT SUM(amount) FROM (\n" +
             "    SELECT rrn, amount FROM commercial_tenant_order_zf \n" +
             "    WHERE (sysRespCode = '00' OR sysRespCode = '10' OR sysRespCode = '11' OR sysRespCode IN ('A2', 'A4', 'A5', 'A6'))\n" +
-            "    AND termSn = #{sn} \n" +
+            "    AND termSn LIKE CONCAT('%', #{sn}, '%')" +
             "    AND termModel=#{termModel} \n" +
             "    AND DATE(createtime) = DATE(#{today}) \n" +
             "    GROUP BY rrn\n" +
             ") AS grouped;")
-    BigDecimal selectBySnTodayMoney (@Param("sn") String sn, @Param("termModel") String termModel, @Param("today")Date today);
+    BigDecimal selectBySnTodayMoney(@Param("sn") String sn, @Param("termModel") String termModel, @Param("today") Date today);
 
     @Select("SELECT SUM(amount) FROM (\n" +
             "    SELECT rrn, amount FROM commercial_tenant_order_zf \n" +
             "    WHERE (sysRespCode = '00' OR sysRespCode = '10' OR sysRespCode = '11' OR sysRespCode IN ('A2', 'A4', 'A5', 'A6'))\n" +
-            "    AND termSn = #{sn} \n" +
+            "    AND termSn LIKE CONCAT('%', #{sn}, '%')" +
             "    AND termModel=#{termModel} \n" +
             "    AND YEAR(createtime) = YEAR(#{specifiedDate}) AND MONTH(createtime) = MONTH(#{specifiedDate}) \n" +
             "    GROUP BY rrn\n" +

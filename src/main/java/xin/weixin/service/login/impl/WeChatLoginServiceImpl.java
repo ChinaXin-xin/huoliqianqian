@@ -43,7 +43,7 @@ public class WeChatLoginServiceImpl implements WeChatLoginService {
     private UserMapper userMapper;
 
     private static final String APP_ID = "wx2b213ad5e5c4c2a8";
-    private static final String APP_SECRET = "d736adeae0116b8b18975fb0da8ba48e";
+    private static final String APP_SECRET = "72b0ab089db22cc3c9a8e2fee3a5835a";
 
     //微信用户同一密码，1234，因为要使用rrt的数据库
     private static final String wxUserPasswordEncode = "$2a$10$Kp1jWcSs1tq18zu4L2TfZuYbrcdRZB/itpwXRybnfgNsIkJBLqCfq";
@@ -162,7 +162,7 @@ public class WeChatLoginServiceImpl implements WeChatLoginService {
             String userFlag = curUser.getUserName() + "++--++" + curUser.getPassword() + "++--++" + jwtDate;
             String jwt = JwtUtil.createJWT(userFlag);
             curUser.setJwt(jwtDate.toString());
-
+            curUser.setOpenId(details.getOpenid());
             userMapper.insert(curUser);
 
             //把token响应给前端

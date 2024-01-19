@@ -46,7 +46,6 @@ public class SysBannerServiceImpl implements SysBannerService {
         // 计算 OFFSET
         int offset = (pageNumber - 1) * quantity;
 
-        System.out.println(query);
         List<SysBanner> usd = sysBannerMapper.selectPaging(
                 query.getSysBanner(), offset, quantity);
         query.setResultList(usd);

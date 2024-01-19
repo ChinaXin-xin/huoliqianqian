@@ -45,7 +45,6 @@ public class SysMsgServiceImpl implements SysMsgService {
         // 计算 OFFSET
         int offset = (pageNumber - 1) * quantity;
 
-        System.out.println(query);
         List<SysMsg> usd = sysMsgMapper.selectPaging(
                 query.getSysMsg(), offset, quantity);
         query.setResultList(usd);

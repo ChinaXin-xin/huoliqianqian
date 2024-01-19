@@ -124,7 +124,8 @@ public class PersonalInformationController {
     public ResponseResult<DealPerformanceRequestQuery> getDayData(@RequestBody DealPerformanceRequestQuery query) {
         if (query.getType().equals("selectPageTodayMsg")) {
             //个人业绩中的日维度
-            return selectPageMyselfTodayMsg(query);
+            //return selectPageMyselfTodayMsg(query);
+            return selectPageAllTodayMsg(query);
         } else if (query.getType().equals("selectPageOurTodayMsg")) {
             //团队业绩中的日维度
             return selectPageOurTodayMsg(query);
@@ -139,7 +140,8 @@ public class PersonalInformationController {
     public ResponseResult<DealPerformanceRequestQuery> getMonthData(@RequestBody DealPerformanceRequestQuery query) {
         if (query.getType().equals("selectPageMyselfThisMonthMsg")) {
             //人业绩中的月维度
-            return selectPageMyselfThisMonthMsg(query);
+            //return selectPageMyselfThisMonthMsg(query);
+            return selectPageAllMonthMsg(query);
         } else if (query.getType().equals("selectPageOurMonthMsg")) {
             //团队业绩中的月维度
             return selectPageOurMonthMsg(query);

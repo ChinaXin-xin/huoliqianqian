@@ -22,4 +22,7 @@ public class WxUserDetails {
 
     // 用于解密的session_key
     private String session_key;
+
+    // 用户的openid
+    private String openid;
 }

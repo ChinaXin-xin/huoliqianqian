@@ -126,9 +126,9 @@ public class MyselfMachineServiceImpl implements MyselfMachineService {
                 List<MachineSnBelongUser> tempList = sysPosTerminalMapper.selectByUidToMyselfTypeMachineNotActivate(user.getId(), query.getSysPosTerminal());
 
                 //设置所属人名字
-                for (MachineSnBelongUser their : tempList) {
+/*                for (MachineSnBelongUser their : tempList) {
                     their.setName(user.getName());
-                }
+                }*/
 
                 resultList.addAll(tempList);
             }

@@ -13,5 +13,12 @@ spring:
     database: 6
 mybatis-plus:
   mapper-locations: classpath*:/mapper/**/*.xml
+
+# 微信小程序的证书
+wxKeyPath: /www/wwwroot/www_rrthb_com_xin/certificate/apiclient_cert.p12
+wxPrivateCertPath: /www/wwwroot/www_rrthb_com_xin/certificate/apiclient_cert.pem
+wxPrivateKeyPath: /www/wwwroot/www_rrthb_com_xin/certificate/apiclient_key.pem
+
+# 文件上传时用到的路径
 virtualFileDepositPath: /api/image/**
 realityFileDepositPath: /www/wwwroot/www_rrthb_com_xin/resources/ #结束必须要带/

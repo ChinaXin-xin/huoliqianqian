@@ -27,7 +27,6 @@ public class invitationServiceImpl implements InvitationService {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         LoginUser loginUser = (LoginUser) authentication.getPrincipal();
         User user = loginUser.getUser();
-        System.out.println(user);
         String QRPath = realityFileDepositPath + user.getUserName() + ".png";
 /*        File file = new File(QRPath);
         if (file.exists()) {

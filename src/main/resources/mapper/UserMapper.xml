@@ -99,39 +99,7 @@
 
     <select id="queryCommonUserMsgList" resultType="xin.common.domain.User" parameterType="map">
         SELECT
-        id,
-        user_name,
-        password,
-        name,
-        myself_number,
-        level,
-        manual_level,
-        expire_date,
-        time,
-        phone,
-        is_authentication,
-        referrer_name,
-        referrer_number,
-        referrer_level,
-        storage,
-        stock_removal,
-        activated_machinery_count,
-        inactive_machinery_count,
-        merchant_transfer_in,
-        merchant_transfer_out,
-        my_points,
-        referral_reward,
-        profit_sharing_reward,
-        transaction_volume,
-        status,
-        user_type,
-        create_by,
-        create_time,
-        update_by,
-        update_time,
-        del_flag,
-        version,
-        nickname
+        *
         FROM
         sys_user
         <where>

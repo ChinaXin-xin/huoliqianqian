@@ -81,6 +81,15 @@ public interface SysPosTerminalMapper extends BaseMapper<SysPosTerminal> {
     Integer selectByUidNoActivateNum(@Param("uid") Long uid);
 
     /**
+     * 查询自己有多已经激活的pos机
+     *
+     * @param uid
+     * @return
+     */
+    @Select("SELECT COUNT(*) from sys_pos_terminal where uid=#{uid} and type=3")
+    Integer selectByUidActivatedMachineryCount(@Param("uid") Long uid);
+
+    /**
      * 把sn吗对应的机器划入用户，把uid与用户的id绑定
      * 划分的时候必须是从仓库，也就是uid=100的账号划分出去，已经划分给别人的，也就是uid不为100的，不能划分
      *

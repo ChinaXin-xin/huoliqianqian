@@ -17,6 +17,7 @@ import xin.admin.service.fundsFlowManagement.CommercialTenantOrderZFService;
 import xin.admin.service.userInfomation.UserService;
 import xin.admin.utils.TimeUtils;
 import xin.common.domain.User;
+import xin.h5.service.performance.PerformanceService;
 
 import java.math.BigDecimal;
 import java.text.ParseException;
@@ -37,6 +38,8 @@ public class CommercialTenantOrderZFServiceImpl implements CommercialTenantOrder
     @Autowired
     UserService userService;
 
+    @Autowired
+    PerformanceService performanceService;
 
     /**
      * 判断此次交易是否成功，true成功
@@ -92,8 +95,16 @@ public class CommercialTenantOrderZFServiceImpl implements CommercialTenantOrder
             ctoz.setOAmount(ctoz.getAmount());
             ctoz.setLogno(ctoz.getCreatetime() + ctoz.getRrn());
 
+
+            // 防止重复通知
+            if (commercialTenantOrderZFMapper.selectByRrnIsExist(ctoz.getRrn()) == 0) {
+                // 更新该pos机的当日交易信息
+                performanceService.periodicUpdate(ctoz);
+            }
+
             //保存交易流水
             commercialTenantOrderZFMapper.insert(ctoz);
+
 
             //判断是否是交易的成功
             if (isDealSucceed(ctoz)) {

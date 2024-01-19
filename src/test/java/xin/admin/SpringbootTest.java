@@ -33,6 +33,9 @@ public class SpringbootTest {
 
     @Test
     public void testExistsByRrn() {
+
+        System.out.println(performanceMapper.selectByRecently());
+
         Calendar calendar = Calendar.getInstance();
         calendar.set(Calendar.YEAR, 2023);
         calendar.set(Calendar.MONTH, Calendar.APRIL); // 月份从0开始，所以4月是3

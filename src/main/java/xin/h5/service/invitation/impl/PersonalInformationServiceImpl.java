@@ -14,6 +14,7 @@ import xin.common.domain.User;
 import xin.h5.domain.personalInformation.AccumulatedTotal;
 import xin.h5.domain.personalInformation.DealPerformance;
 import xin.h5.domain.personalInformation.query.DealPerformanceRequestQuery;
+import xin.h5.mapper.performance.PerformanceMapper;
 import xin.h5.service.invitation.PersonalInformationService;
 import xin.level.service.UserGradationService;
 
@@ -34,6 +35,9 @@ public class PersonalInformationServiceImpl implements PersonalInformationServic
 
     @Autowired
     UserMapper userMapper;
+
+    @Autowired
+    PerformanceMapper performanceMapper;
 
     /**
      * 获取自己的当月交易额等信息
@@ -433,7 +437,10 @@ public class PersonalInformationServiceImpl implements PersonalInformationServic
         // 使用Calendar实例来增加日期
         Calendar calendarTemp = Calendar.getInstance();
         calendarTemp.setTime(endDate);
-        //calendarTemp.add(Calendar.DAY_OF_YEAR, 1); // 加一天
+        calendarTemp.set(Calendar.HOUR_OF_DAY, 23);
+        calendarTemp.set(Calendar.MINUTE, 59);
+        calendarTemp.set(Calendar.SECOND, 59);
+        calendarTemp.set(Calendar.MILLISECOND, 999);
         endDate = calendarTemp.getTime();
 
         List<Date> dates = new ArrayList<>();
@@ -528,7 +535,8 @@ public class PersonalInformationServiceImpl implements PersonalInformationServic
                         // 可以考虑记录日志，但不返回，继续处理其他项
                         continue;
                     }
-                    BigDecimal thisMonthMoney = commercialTenantOrderZFMapper.selectBySnTodayMoney(sysPosTerminal.getMachineNo(), sysPosTerminal.getClazz(), queryDate);
+                    //BigDecimal thisMonthMoney = commercialTenantOrderZFMapper.selectBySnTodayMoney(sysPosTerminal.getMachineNo(), sysPosTerminal.getClazz(), queryDate);
+                    BigDecimal thisMonthMoney = performanceMapper.selectBySnToSomeDayMoney(sysPosTerminal.getMachineNo(), sysPosTerminal.getClazz(), queryDate);
                     if (thisMonthMoney != null) {
                         money = money.add(thisMonthMoney);
                     }
@@ -650,7 +658,8 @@ public class PersonalInformationServiceImpl implements PersonalInformationServic
                         // 可以考虑记录日志，但不返回，继续处理其他项
                         continue;
                     }
-                    BigDecimal thisMonthMoney = commercialTenantOrderZFMapper.selectBySnSpecifiedYearCurrentMonth(sysPosTerminal.getMachineNo(), sysPosTerminal.getClazz(), queryDate);
+                    //BigDecimal thisMonthMoney = commercialTenantOrderZFMapper.selectBySnSpecifiedYearCurrentMonth(sysPosTerminal.getMachineNo(), sysPosTerminal.getClazz(), queryDate);
+                    BigDecimal thisMonthMoney = performanceMapper.selectBySnToSomeMonthMoney(sysPosTerminal.getMachineNo(), sysPosTerminal.getClazz(), queryDate);
                     if (thisMonthMoney != null) {
                         money = money.add(thisMonthMoney);
                     }
@@ -774,7 +783,8 @@ public class PersonalInformationServiceImpl implements PersonalInformationServic
                             // 可以考虑记录日志，但不返回，继续处理其他项
                             continue;
                         }
-                        BigDecimal thisMonthMoney = commercialTenantOrderZFMapper.selectBySnTodayMoney(sysPosTerminal.getMachineNo(), sysPosTerminal.getClazz(), queryDate);
+                        //BigDecimal thisMonthMoney = commercialTenantOrderZFMapper.selectBySnTodayMoney(sysPosTerminal.getMachineNo(), sysPosTerminal.getClazz(), queryDate);
+                        BigDecimal thisMonthMoney = performanceMapper.selectBySnToSomeDayMoney(sysPosTerminal.getMachineNo(), sysPosTerminal.getClazz(), queryDate);
                         if (thisMonthMoney != null) {
                             money = money.add(thisMonthMoney);
                         }
@@ -850,11 +860,10 @@ public class PersonalInformationServiceImpl implements PersonalInformationServic
                             // 可以考虑记录日志，但不返回，继续处理其他项
                             continue;
                         }
-                        BigDecimal thisMonthMoney = commercialTenantOrderZFMapper.selectBySnSpecifiedYearCurrentMonth(sysPosTerminal.getMachineNo(), sysPosTerminal.getClazz(), queryDate);
+                        //BigDecimal thisMonthMoney = commercialTenantOrderZFMapper.selectBySnSpecifiedYearCurrentMonth(sysPosTerminal.getMachineNo(), sysPosTerminal.getClazz(), queryDate);
+                        BigDecimal thisMonthMoney = performanceMapper.selectBySnToSomeMonthMoney(sysPosTerminal.getMachineNo(), sysPosTerminal.getClazz(), queryDate);
                         if (thisMonthMoney != null) {
                             money = money.add(thisMonthMoney);
-                            System.out.print(sysPosTerminal.getMachineNo() + "   " + sysPosTerminal.getClazz() + "  " + queryDate);
-                            System.out.println("  money加:" + thisMonthMoney);
                         }
                     }
                 }
@@ -963,7 +972,8 @@ public class PersonalInformationServiceImpl implements PersonalInformationServic
                             // 可以考虑记录日志，但不返回，继续处理其他项
                             continue;
                         }
-                        BigDecimal thisMonthMoney = commercialTenantOrderZFMapper.selectBySnTodayMoney(sysPosTerminal.getMachineNo(), sysPosTerminal.getClazz(), queryDate);
+                        //BigDecimal thisMonthMoney = commercialTenantOrderZFMapper.selectBySnTodayMoney(sysPosTerminal.getMachineNo(), sysPosTerminal.getClazz(), queryDate);
+                        BigDecimal thisMonthMoney = performanceMapper.selectBySnToSomeDayMoney(sysPosTerminal.getMachineNo(), sysPosTerminal.getClazz(), queryDate);
                         if (thisMonthMoney != null) {
                             money = money.add(thisMonthMoney);
                         }
@@ -1031,11 +1041,10 @@ public class PersonalInformationServiceImpl implements PersonalInformationServic
                             // 可以考虑记录日志，但不返回，继续处理其他项
                             continue;
                         }
-                        BigDecimal thisMonthMoney = commercialTenantOrderZFMapper.selectBySnSpecifiedYearCurrentMonth(sysPosTerminal.getMachineNo(), sysPosTerminal.getClazz(), queryDate);
+                        //BigDecimal thisMonthMoney = commercialTenantOrderZFMapper.selectBySnSpecifiedYearCurrentMonth(sysPosTerminal.getMachineNo(), sysPosTerminal.getClazz(), queryDate);
+                        BigDecimal thisMonthMoney = performanceMapper.selectBySnToSomeMonthMoney(sysPosTerminal.getMachineNo(), sysPosTerminal.getClazz(), queryDate);
                         if (thisMonthMoney != null) {
                             money = money.add(thisMonthMoney);
-                            System.out.print(sysPosTerminal.getMachineNo() + "   " + sysPosTerminal.getClazz() + "  " + queryDate);
-                            System.out.println("  money加:" + thisMonthMoney);
                         }
                     }
                 }
@@ -1044,8 +1053,6 @@ public class PersonalInformationServiceImpl implements PersonalInformationServic
             DealPerformance dealPerformance = new DealPerformance();
             dealPerformance.setTime(queryDate);
             dealPerformance.setMoney(money);
-            System.out.println("money=======" + money);
-            System.out.println();
             dealPerformance.setNewPartner(todayNewPerson);
             dealPerformance.setNewActivatePos(todayNewPos);
             dealPerformance.setAccumulativeTotalPartner(accumulativeTotalPartner);

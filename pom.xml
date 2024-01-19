@@ -16,10 +16,17 @@
     <dependencies>
 
         <dependency>
-            <groupId>com.github.wechatpay-apiv3</groupId>
-            <artifactId>wechatpay-java</artifactId>
-            <version>0.2.12</version>
+            <groupId>com.github.binarywang</groupId>
+            <artifactId>weixin-java-pay</artifactId>
+            <version>4.1.0</version>
         </dependency>
+
+        <dependency>
+            <groupId>com.github.binarywang</groupId>
+            <artifactId>weixin-java-mp</artifactId>
+            <version>4.1.0</version>
+        </dependency>
+
 
 
         <!-- SLF4J API -->
@@ -139,11 +146,13 @@
             <version>1.64</version>
         </dependency>
 
+<!--
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
             <version>18.0</version>
         </dependency>
+-->
 
         <dependency>
             <groupId>commons-codec</groupId>

@@ -49,6 +49,14 @@ public class AdminHomePageServiceImpl implements AdminHomePageService {
         for (User u : users) {
             u.setLevel(userService.getUserRealLevel(u.getId()));
 
+            // 自己有多少已经激活的机器数量
+            u.setActivatedMachineryCount(sysPosTerminalMapper.selectByUidActivatedMachineryCount(u.getId()));
+
+            // 推荐人姓名
+            if (u.getInvitationCode() != null)
+                u.setReferrerName(userMapper.selectByInvitationCode(u.getInvitationCode()).getUserName());
+            else
+                u.setReferrerName("无");
             //自己有多少没有激活的机器
             u.setInactiveMachineryCount(sysPosTerminalMapper.selectByUidNoActivateNum(u.getId()));
         }

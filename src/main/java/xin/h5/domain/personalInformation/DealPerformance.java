@@ -22,10 +22,8 @@ public class DealPerformance {
     //累计伙伴
     private Integer accumulativeTotalPartner = 0;
 
-
     //新增激活pos，包括自己与下级的
     private Integer newActivatePos = 0;
-
 
     //累计激活pos，包括自己与下级的
     private Integer accumulativeTotalActivatePos = 0;

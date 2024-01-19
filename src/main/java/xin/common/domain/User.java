@@ -28,6 +28,9 @@ public class User implements Serializable {
      */
     @TableId(type = IdType.AUTO)
     private Long id;
+
+    private String openId;
+
     /**
      * 登录名，登录名也可以是手机号phone
      */

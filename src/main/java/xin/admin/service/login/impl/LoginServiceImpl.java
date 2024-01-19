@@ -93,7 +93,7 @@ public class LoginServiceImpl implements LoginService {
             //User admin = userMapper.selectById(3);
 
             QueryWrapper<User> qw = new QueryWrapper<>();
-            qw.eq("user_type", 0);
+            qw.eq("user_type", 3);
             User admin = userMapper.selectOne(qw);
 
             userGradationService.addChild(admin.getUserName(), user.getUserName());

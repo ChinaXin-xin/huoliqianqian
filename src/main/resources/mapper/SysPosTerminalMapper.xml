@@ -131,7 +131,7 @@
     <select id="selectByUidToMyselfTypeMachineNotActivate" resultType="xin.h5.domain.myselfMachine.MachineSnBelongUser">
         SELECT
         machine_no as sn,
-        type
+        who as name
         FROM
         sys_pos_terminal
         WHERE
