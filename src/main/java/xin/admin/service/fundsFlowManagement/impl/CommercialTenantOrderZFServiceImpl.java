@@ -95,10 +95,6 @@ public class CommercialTenantOrderZFServiceImpl implements CommercialTenantOrder
             ctoz.setOAmount(ctoz.getAmount());
             ctoz.setLogno(ctoz.getCreatetime() + ctoz.getRrn());
 
-            //保存交易流水
-            commercialTenantOrderZFMapper.insert(ctoz);
-
-
             //判断是否是交易的成功，并且是第一次推送
             if (isDealSucceed(ctoz) && commercialTenantOrderZFMapper.selectByRrnIsExist(ctoz.getRrn()) == 0) {
 
@@ -108,6 +104,9 @@ public class CommercialTenantOrderZFServiceImpl implements CommercialTenantOrder
                 //根据交易流水进行分润
                 userService.shareBenefit(ctoz);
             }
+
+            //保存交易流水
+            commercialTenantOrderZFMapper.insert(ctoz);
         }
         return new ResponseResult(200, "推送成功！");
     }

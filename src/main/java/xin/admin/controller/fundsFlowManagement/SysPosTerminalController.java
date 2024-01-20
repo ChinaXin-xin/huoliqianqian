@@ -37,4 +37,8 @@ public class SysPosTerminalController {
     public ResponseResult add(@RequestBody SysPosTerminalAdd add) {
         return service.add(add);
     }
+
+/*    @PostMapping("setCharge")
+    public ResponseResult */
+
 }

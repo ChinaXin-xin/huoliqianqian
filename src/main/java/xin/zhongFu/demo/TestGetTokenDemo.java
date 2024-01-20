@@ -52,5 +52,4 @@ public class TestGetTokenDemo {
 		System.out.println("获取令牌信息结果token:" + tokenStr);
 		return tokenStr;
 	}
-	
 }
