@@ -6,19 +6,19 @@ package xin.zhongFu.constants;
 public class EnvAndApiConstant {
 	
 /*
-	//测试环境信息地址
+	//环境信息地址
 	public final static String ENV_ADDR_TEST = "http://39.103.165.38:38660";
-	//测试环境密钥KEY
+	//环境密钥KEY
 	public final static String ENV_TEST_KEY = "87200062532913E4";
-	//测试环境服务商编号
+	//环境服务商编号
 	public final static String ENV_TEST_AGENT_ID = "87200062";
 */
 
 	//环境信息地址
 	public final static String ENV_ADDR_TEST = "http://121.89.222.153:38660";
-	//测试环境密钥KEY
+	//环境密钥KEY
 	public final static String ENV_TEST_KEY = "748003204755CC03";
-	//测试环境服务商编号
+	//环境服务商编号
 	public final static String ENV_TEST_AGENT_ID = "74800320";
 	
 	//令牌API

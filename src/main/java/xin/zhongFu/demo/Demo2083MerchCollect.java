@@ -25,7 +25,7 @@ public class Demo2083MerchCollect {
         merchReq.setToken(tokenInfo);
         merchReq.setTraceNo(String.valueOf(System.currentTimeMillis()));
         System.out.println("请求流水：" + merchReq.getTraceNo());
-        merchReq.setMerchId("748000000124073");
+        merchReq.setMerchId("748000000124073"); // pos商户号
         merchReq.setDirectAgentId(EnvAndApiConstant.ENV_TEST_AGENT_ID);
         merchReq.setSn("00005702883072010418");
         merchReq.setPosCharge("0");

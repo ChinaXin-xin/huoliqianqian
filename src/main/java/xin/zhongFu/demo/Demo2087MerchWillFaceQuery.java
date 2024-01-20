@@ -46,7 +46,7 @@ public class Demo2087MerchWillFaceQuery {
         List<MerchCollectQueryResp> merchResp = JSONArray.parseArray(respEntity.getData(), MerchCollectQueryResp.class);
         System.out.println(respEntity.getData());
 
-// 初始化ObjectMapper
+        // 初始化ObjectMapper
         ObjectMapper objectMapper = new ObjectMapper();
 
         try {

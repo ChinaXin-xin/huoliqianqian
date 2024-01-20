@@ -57,6 +57,8 @@ public class SysPosTerminal {
 
     private String idCard;   //身份证
 
+    private String simCharge; // 流量费
+
     public Date getCreateTime() {
         if (this.createTime == null)
             new Date();
