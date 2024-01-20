@@ -59,6 +59,9 @@ public class SysPosTerminal {
 
     private String simCharge; // 流量费
 
+    @TableField(exist = false)
+    private Boolean isWhiteList = false; // 是否存在与白名单
+
     public Date getCreateTime() {
         if (this.createTime == null)
             new Date();

@@ -28,6 +28,28 @@
         AND spt.uid = 100
         ORDER BY spt.update_time DESC
     </select>
+
+    <select id="selectSysPosTerminalIsActivate" resultType="xin.admin.domain.fundsFlowManagement.SysPosTerminal" parameterType="map">
+        SELECT spt.*, su.id AS user_id, su.phone
+        FROM sys_pos_terminal spt
+        JOIN sys_user su ON spt.uid = su.id
+        <where>
+            <if test="query != null">
+                <if test="query.machineNo != null and query.machineNo != ''">
+                    AND spt.machine_no LIKE CONCAT('%', #{query.machineNo}, '%')
+                </if>
+                <if test="query.clazz != null and query.clazz != ''">
+                    AND spt.clazz LIKE CONCAT('%', #{query.clazz}, '%')
+                </if>
+                <if test="query.phone != null and query.phone != ''">
+                    AND su.phone LIKE CONCAT('%', #{query.phone}, '%')
+                </if>
+            </if>
+        </where>
+        AND spt.type='3'
+        ORDER BY spt.update_time DESC
+    </select>
+
     <select id="selectSysPosTerminalCount" resultType="java.lang.Integer">
         SELECT COUNT(*)
         FROM sys_pos_terminal spt

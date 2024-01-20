@@ -20,6 +20,8 @@ import java.util.List;
 public interface SysPosTerminalMapper extends BaseMapper<SysPosTerminal> {
     Page<SysPosTerminal> selectSysPosTerminal(Page<SysPosTerminal> page, @Param("query") SysPosTerminal sysPosTerminal);
 
+    Page<SysPosTerminal> selectSysPosTerminalIsActivate(Page<SysPosTerminal> page, @Param("query") SysPosTerminal sysPosTerminal);
+
     Integer selectSysPosTerminalCount(@Param("query") SysPosTerminal sysPosTerminal);
 
     Page<SysPosTerminal> selectSysPosTerminalTransferManagement(Page<SysPosTerminal> page, @Param("query") SysPosTerminal sysPosTerminal);
