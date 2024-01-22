@@ -143,7 +143,6 @@ public class CommercialTenantOrderZFServiceImpl implements CommercialTenantOrder
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-
             }
 
             //保存交易流水

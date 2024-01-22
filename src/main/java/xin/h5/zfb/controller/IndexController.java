@@ -13,7 +13,7 @@ public class IndexController {
 	 */
 	@RequestMapping("/toIndex")
 	public String toIndex() {
-		return "index";
+		return "支付宝下单index";
 	}
 
 

@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0,minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="keywords" content="支付测试"/>
+    <meta name="description" content="支付测试"/>
+    <title>支付宝测试</title>
+</head>
+
+<body>
+<h3>支付宝测试</h3>
+<button id="alipayTradeWapPay">H5手机网站支付（外部商户创建订单并支付）</button>
+<br><br>
+<button id="alipayTradePagePay">统一收单下单并支付页面（PC场景下单并支付）</button>
+<br><br>
+<button id="alipayTradeAppPay">原生手机APP支付（外部商户APP唤起快捷SDK创建订单并支付）</button>
+<br><br>
+<button id="alipayTradePrecreate">统一收单线下交易预创建(线下扫码支付)</button>
+<br><br>
+<button id="alipayTradePay">统一收单交易支付（线下条码支付、声波支付）</button>
+<br><br>
+<button id="alipayFundTransToaccountTransfer">单笔转账到支付宝账户（红包等业务）</button>
+
+
+<script th:src="@{/js/jquery-2.1.4.min.js}"></script>
+<script th:src="@{/js/plugins/layer/2.4/layer.js}"></script>
+
+<script type="text/javascript">
+    /**
+     * 支付宝H5手机网站支付
+     */
+    $("#alipayTradeWapPay").click(function () {
+        $.ajax({
+            url: "/alipay/alipayTradeWapPay",
+            type: 'post',
+            dataType: "json",
+            data: {
+                "sysH5Goods": {
+                    id: 1
+                }
+            },
+            success: function (data) {
+                if (data.success == true) {
+                    console.log(data);
+                    const div = document.createElement('divform');
+                    div.innerHTML = data.data;
+                    document.body.appendChild(div);
+                    document.forms[0].submit();
+                } else {
+                    layer.msg(data.msg, {icon: 5, time: 1000});
+                }
+            }
+        });
+    })
+
+
+    /**
+     * 支付宝H5电脑网站支付
+     */
+    $("#alipayTradePagePay").click(function () {
+        $.ajax({
+            url: "/alipay/alipayTradePagePay",
+            type: 'post',
+            dataType: "json",
+            data: {},
+            success: function (data) {
+                if (data.success == true) {
+                    console.log(data);
+                    const div = document.createElement('divform');
+                    div.innerHTML = data.data;
+                    document.body.appendChild(div);
+                    document.forms[0].submit();
+                } else {
+                    layer.msg(data.msg, {icon: 5, time: 1000});
+                }
+            }
+        });
+    })
+
+
+    /**
+     * 支付宝手机原生APP支付
+     */
+    $("#alipayTradeAppPay").click(function () {
+        $.ajax({
+            url: "/alipay/alipayTradeAppPay",
+            type: 'post',
+            dataType: "json",
+            data: {},
+            success: function (data) {
+                if (data.success == true) {
+                    console.log(data);
+                    //此处只是模拟支付宝原生的后台调取，返回该接口给原生之后，他们需要根据该返回结果，调取支付宝的sdk处理
+                } else {
+                    layer.msg(data.msg, {icon: 5, time: 1000});
+                }
+            }
+        });
+    })
+
+
+    /**
+     * 线下扫码支付交易预创建
+     */
+    $("#alipayTradePrecreate").click(function () {
+        $.ajax({
+            url: "/alipay/alipayTradePrecreate",
+            type: 'post',
+            dataType: "json",
+            data: {},
+            success: function (data) {
+                if (data.success == true) {
+                    window.location.href = "/alipay/toQrcode?qr_code_url=" + data.data;
+                } else {
+                    layer.msg(data.msg, {icon: 5, time: 1000});
+                }
+            }
+        });
+    })
+
+
+    /**
+     * 线下条码支付交易预创建
+     */
+    $("#alipayTradePay").click(function () {
+        $.ajax({
+            url: "/alipay/alipayTradePay",
+            type: 'post',
+            dataType: "json",
+            data: {
+                //支付授权码，即APP里面显示的条码数字
+                'auth_code': '286993111374999699'
+            },
+            success: function (data) {
+                if (data.success == true) {
+                    console.log(data);
+                } else {
+                    layer.msg(data.msg, {icon: 5, time: 1000});
+                }
+            }
+        });
+    })
+
+
+    /**
+     * 单笔转账到支付宝账户
+     */
+    $("#alipayFundTransToaccountTransfer").click(function () {
+        $.ajax({
+            url: "/alipay/alipayFundTransToaccountTransfer",
+            type: 'post',
+            dataType: "json",
+            data: {},
+            success: function (data) {
+                if (data.success == true) {
+                    console.log(data);
+                } else {
+                    layer.msg(data.msg, {icon: 5, time: 1000});
+                }
+            }
+        });
+    })
+
+
+</script>
+
+</body>
+</html>
