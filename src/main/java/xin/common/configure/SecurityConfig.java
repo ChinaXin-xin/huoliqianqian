@@ -52,7 +52,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)  // 设置为无状态，不依赖Session
                 .and()
                 .authorizeRequests()  // 开始定义URL保护规则
-/*                .antMatchers("/api/image/**").permitAll()  // 允许对 /api/image/ 下的所有请求放行
+                .antMatchers("/api/image/**").permitAll()  // 允许对 /api/image/ 下的所有请求放行
                 .antMatchers("/admin/sysBanner/list").permitAll()  // 允许对 /api/image/ 下的所有请求放行
                 .antMatchers("/admin/CommercialTenantOrderZF/add").permitAll()  // 允许对 /api/image/ 下的所有请求放行
                 .antMatchers(HttpMethod.POST, "/admin/aliReturnPay/returnPayAsynchronous").permitAll()  // 支付宝异步回调
@@ -75,8 +75,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.POST, "/pro/commodityClassification/select").permitAll()  // 查询所有分类
                 .antMatchers(HttpMethod.POST, "/pro/commodityClassification/selectByAllMsg/*").permitAll()  // 根据分类id查询
                 .antMatchers(HttpMethod.POST, "/admin/commodityDetail/selectByDetails").permitAll()  // 查询商品关键字
-                .antMatchers("/admin/register").anonymous()*/
-                .anyRequest().permitAll()  // 其他所有请求都需要认证
+                .antMatchers( "/admin/homePage/notification").permitAll()
+                .antMatchers(HttpMethod.POST, "/admin/homePage/notification").permitAll()
+                .antMatchers(HttpMethod.POST, "/admin/hi").permitAll()
+                .antMatchers( "/admin/hi").permitAll()
+
+                .antMatchers("/admin/register").anonymous()
+                .anyRequest().authenticated()  // 其他所有请求都需要认证
                 .and()
                 .addFilterBefore(jwtAuthenticationTokenFilter, UsernamePasswordAuthenticationFilter.class);
         //配置登录异常与权限不足的处理器

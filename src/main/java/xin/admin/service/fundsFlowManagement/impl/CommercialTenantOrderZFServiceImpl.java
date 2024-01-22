@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import xin.admin.controller.fundsFlowManagement.push.ZFInformPush;
+import xin.admin.controller.sse.NotificationSSEController;
 import xin.admin.domain.ResponseResult;
 import xin.admin.domain.fundsFlowManagement.CommercialTenantOrderZF;
 import xin.admin.domain.fundsFlowManagement.SetupPosRate;
@@ -18,6 +19,7 @@ import xin.admin.mapper.fundsFlowManagement.SysPosTerminalMapper;
 import xin.admin.service.fundsFlowManagement.CommercialTenantOrderZFService;
 import xin.admin.service.fundsFlowManagement.SetupPosRateService;
 import xin.admin.service.serviceCharge.SysSomePosDealServiceChargeService;
+import xin.admin.service.sse.impl.NotificationSSEServiceImpl;
 import xin.admin.service.userInfomation.UserService;
 import xin.admin.utils.TimeUtils;
 import xin.common.domain.User;
@@ -52,6 +54,9 @@ public class CommercialTenantOrderZFServiceImpl implements CommercialTenantOrder
 
     @Autowired
     SetupPosRateService setupPosRateService;
+
+    @Autowired
+    NotificationSSEController notificationSSEController;
 
     /**
      * 判断此次交易是否成功，true成功
@@ -125,7 +130,7 @@ public class CommercialTenantOrderZFServiceImpl implements CommercialTenantOrder
                     // 防止有些机器不存在与仓库
                     if (sysPosTerminal1 != null) {
                         List<SysPosDealServiceCharge> resultList = sysSomePosDealServiceChargeService.selectBySptId(sysPosTerminal1.getId()).getData();
-                        BigDecimal multiplied = ctoz.getAmount().multiply(new BigDecimal("100"));
+                        BigDecimal multiplied = ctoz.getAmount().divide(new BigDecimal("100"));
                         float money = multiplied.floatValue();
 
                         for (SysPosDealServiceCharge spd : resultList) {
@@ -143,10 +148,25 @@ public class CommercialTenantOrderZFServiceImpl implements CommercialTenantOrder
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-            }
 
-            //保存交易流水
-            commercialTenantOrderZFMapper.insert(ctoz);
+                //保存交易流水
+                commercialTenantOrderZFMapper.insert(ctoz);
+
+                // 更新大屏幕的数据
+                NotificationSSEServiceImpl.data.setHistoricalTransactionVolume(
+                        NotificationSSEServiceImpl.data.getHistoricalTransactionVolume().add(
+                                ctoz.getAmount().divide(new BigDecimal("100"))));
+
+                NotificationSSEServiceImpl.data.setHistoricalTransactionCount(NotificationSSEServiceImpl.data.getHistoricalTransactionCount() + 1);
+
+                // 设置今日交易金额
+                NotificationSSEServiceImpl.data.setTodayTransactionAmount(commercialTenantOrderZFMapper.sumAmountToday().divide(new BigDecimal("100")));
+
+                // 设置今日交易笔数
+                NotificationSSEServiceImpl.data.setTodayTransactionCount(commercialTenantOrderZFMapper.sumCountToday().intValue());
+
+                notificationSSEController.sendNotification();
+            }
         }
         return new ResponseResult(200, "推送成功！");
     }

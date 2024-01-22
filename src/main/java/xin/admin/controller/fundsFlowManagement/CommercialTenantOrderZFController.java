@@ -30,7 +30,7 @@ public class CommercialTenantOrderZFController {
 
 
     @PostMapping("/list")
-    public ResponseResult<CommercialTenantOrderZFRequestQuery>  list(@RequestBody CommercialTenantOrderZFRequestQuery query) {
+    public ResponseResult<CommercialTenantOrderZFRequestQuery> list(@RequestBody CommercialTenantOrderZFRequestQuery query) {
         return commercialTenantOrderZFService.list(query);
     }
 }

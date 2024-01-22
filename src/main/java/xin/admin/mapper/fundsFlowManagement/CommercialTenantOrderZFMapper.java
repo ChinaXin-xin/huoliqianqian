@@ -1,5 +1,6 @@
 package xin.admin.mapper.fundsFlowManagement;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -11,6 +12,12 @@ import java.util.Date;
 
 @Mapper
 public interface CommercialTenantOrderZFMapper extends BaseMapper<CommercialTenantOrderZF> {
+
+    // 返回一共多少行
+    default long countRows() {
+        return selectCount(new QueryWrapper<>());
+    }
+
     @Select("SELECT SUM(amount) FROM (\n" +
             "    SELECT rrn, amount FROM commercial_tenant_order_zf \n" +
             "    WHERE cardNo IS NOT NULL \n" +
@@ -18,6 +25,26 @@ public interface CommercialTenantOrderZFMapper extends BaseMapper<CommercialTena
             "    GROUP BY rrn\n" +
             ") AS grouped;\n")
     BigDecimal sumAmount();
+
+    @Select("SELECT SUM(amount) FROM (\n" +
+            "    SELECT rrn, amount FROM commercial_tenant_order_zf \n" +
+            "    WHERE cardNo IS NOT NULL \n" +
+            "    AND (sysRespCode = '00' OR sysRespCode = '10' OR sysRespCode = '11' OR sysRespCode IN ('A2', 'A4', 'A5', 'A6'))\n" +
+            "    AND createtime >= CURDATE() \n" +
+            "    AND createtime < CURDATE() + INTERVAL 1 DAY \n" +
+            "    GROUP BY rrn\n" +
+            ") AS grouped;\n")
+    BigDecimal sumAmountToday();
+
+    @Select("SELECT COUNT(amount) FROM (\n" +
+            "    SELECT rrn, amount FROM commercial_tenant_order_zf \n" +
+            "    WHERE cardNo IS NOT NULL \n" +
+            "    AND (sysRespCode = '00' OR sysRespCode = '10' OR sysRespCode = '11' OR sysRespCode IN ('A2', 'A4', 'A5', 'A6'))\n" +
+            "    AND createtime >= CURDATE() \n" +
+            "    AND createtime < CURDATE() + INTERVAL 1 DAY \n" +
+            "    GROUP BY rrn\n" +
+            ") AS grouped;\n")
+    Long sumCountToday();
 
     @Select("SELECT COUNT(*) FROM commercial_tenant_order_zf WHERE rrn=#{rrn}")
     int selectByRrnIsExist(@Param("rrn") String rrn);

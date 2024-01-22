@@ -28,9 +28,9 @@ public class Demo2083MerchCollect {
         merchReq.setMerchId("748000000124073"); // pos商户号
         merchReq.setDirectAgentId(EnvAndApiConstant.ENV_TEST_AGENT_ID);
         merchReq.setSn("00005702883072010418");
-        merchReq.setPosCharge("0");
+        merchReq.setPosCharge("1");
         merchReq.setVipCharge("0");
-        merchReq.setSimCharge("1");
+        merchReq.setSimCharge("0");
         merchReq.setSmsSend("1");
         merchReq.setSmsCode("0001");
 

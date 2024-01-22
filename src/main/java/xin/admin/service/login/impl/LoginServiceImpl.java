@@ -9,10 +9,12 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import xin.admin.controller.sse.NotificationSSEController;
 import xin.admin.domain.LoginUser;
 import xin.admin.domain.ResponseResult;
 import xin.admin.mapper.UserMapper;
 import xin.admin.service.login.LoginService;
+import xin.admin.service.sse.impl.NotificationSSEServiceImpl;
 import xin.admin.utils.JwtUtil;
 import xin.admin.utils.MyStringUtils;
 import xin.common.domain.User;
@@ -42,6 +44,9 @@ public class LoginServiceImpl implements LoginService {
 
     @Autowired
     SysAwardMapper sysAwardMapper;
+
+    @Autowired
+    NotificationSSEController notificationSSEController;
 
     @Override
     public ResponseResult login(User user, Boolean isAdmin) {
@@ -107,6 +112,8 @@ public class LoginServiceImpl implements LoginService {
         sysAward.setUid(user.getId());
         sysAwardMapper.insert(sysAward);
 
+        NotificationSSEServiceImpl.data.setCurrentVisitorsCount(NotificationSSEServiceImpl.data.getCurrentVisitorsCount() + 1);
+        notificationSSEController.sendNotification();
         return new ResponseResult(200, "注册成功");
     }
 
