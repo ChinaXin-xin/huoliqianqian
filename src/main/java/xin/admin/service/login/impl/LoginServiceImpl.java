@@ -112,7 +112,7 @@ public class LoginServiceImpl implements LoginService {
         sysAward.setUid(user.getId());
         sysAwardMapper.insert(sysAward);
 
-        NotificationSSEServiceImpl.data.setCurrentVisitorsCount(NotificationSSEServiceImpl.data.getCurrentVisitorsCount() + 1);
+        NotificationSSEController.data.setCurrentVisitorsCount(NotificationSSEController.data.getCurrentVisitorsCount() + 1);
         notificationSSEController.sendNotification();
         return new ResponseResult(200, "注册成功");
     }

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>WebSocket Chat</title>
+</head>
+<body>
+<h1>WebSocket Chat</h1>
+<div id="chat-container">
+  <div id="chat-messages"></div>
+  <input type="text" id="message-input" placeholder="Type a message..." />
+  <button onclick="sendMessage()">Send</button>
+</div>
+
+<script>
+  // WebSocket连接
+  const socket = new WebSocket("ws://www.rrthb.com/wws/webSocket/test");
+
+  // 处理连接建立事件
+  socket.onopen = () => {
+    addMessage("Connected to WebSocket server");
+  };
+
+  // 处理消息接收事件
+  socket.onmessage = (event) => {
+    const message = event.data;
+    addMessage("Server: " + message);
+  };
+
+  // 处理连接关闭事件
+  socket.onclose = () => {
+    addMessage("Connection to WebSocket server closed");
+  };
+
+  // 发送消息
+  function sendMessage() {
+    const messageInput = document.getElementById("message-input");
+    const message = messageInput.value;
+    socket.send(message);
+    messageInput.value = "";
+    addMessage("You: " + message);
+  }
+
+  // 添加消息到聊天窗口
+  function addMessage(message) {
+    const chatMessages = document.getElementById("chat-messages");
+    const messageElement = document.createElement("div");
+    messageElement.textContent = message;
+    chatMessages.appendChild(messageElement);
+  }
+</script>
+</body>
+</html>

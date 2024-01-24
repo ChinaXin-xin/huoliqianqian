@@ -77,8 +77,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.POST, "/admin/commodityDetail/selectByDetails").permitAll()  // 查询商品关键字
                 .antMatchers( "/admin/homePage/notification").permitAll()
                 .antMatchers(HttpMethod.POST, "/admin/homePage/notification").permitAll()
+
+                .antMatchers( "/wws/webSocket/test").permitAll()
+                .antMatchers(HttpMethod.POST, "/wws/webSocket/test").permitAll()
+
                 .antMatchers(HttpMethod.POST, "/admin/hi").permitAll()
                 .antMatchers( "/admin/hi").permitAll()
+
+                .antMatchers(HttpMethod.POST, "/admin/h2").permitAll()
+                .antMatchers( "/admin/h2").permitAll()
 
                 .antMatchers("/admin/register").anonymous()
                 .anyRequest().authenticated()  // 其他所有请求都需要认证

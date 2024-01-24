@@ -10,4 +10,9 @@ public class Temp {
     public String sayHello() {
         return "index";
     }
+
+    @RequestMapping("/admin/h2")
+    public String sayHello2() {
+        return "index2";
+    }
 }

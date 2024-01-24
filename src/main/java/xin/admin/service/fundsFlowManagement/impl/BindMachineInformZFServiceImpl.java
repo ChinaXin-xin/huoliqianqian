@@ -74,8 +74,8 @@ public class BindMachineInformZFServiceImpl implements BindMachineInformZFServic
             bindMachineInformZFMapper.insert(b);
 
             // 更新
-            NotificationSSEServiceImpl.data.setActiveMachinesCount(NotificationSSEServiceImpl.data.getActiveMachinesCount() + 1);
-            NotificationSSEServiceImpl.data.setInactiveMachinesCount(NotificationSSEServiceImpl.data.getInactiveMachinesCount() - 1);
+            NotificationSSEController.data.setActiveMachinesCount(NotificationSSEController.data.getActiveMachinesCount() + 1);
+            NotificationSSEController.data.setInactiveMachinesCount(NotificationSSEController.data.getInactiveMachinesCount() - 1);
             notificationSSEController.sendNotification();
         }
         return new ResponseResult<>(200, "添加成功！");

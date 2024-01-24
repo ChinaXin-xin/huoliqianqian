@@ -13,6 +13,7 @@ import xin.admin.domain.fundsFlowManagement.ServiceCharge;
 import xin.admin.domain.fundsFlowManagement.SetupPosRate;
 import xin.admin.domain.fundsFlowManagement.SysPosTerminal;
 import xin.admin.domain.fundsFlowManagement.SysServiceChargeHistory;
+import xin.admin.mapper.fundsFlowManagement.SysFeeDeductionRecordMapper;
 import xin.admin.mapper.fundsFlowManagement.SysPosTerminalMapper;
 import xin.admin.mapper.fundsFlowManagement.SysServiceChargeHistoryMapper;
 import xin.admin.service.fundsFlowManagement.SetupPosRateService;
@@ -41,6 +42,9 @@ public class SetupPosRateServiceImpl implements SetupPosRateService {
 
     @Autowired
     SysPosTerminalMapper sysPosTerminalMapper;
+
+    @Autowired
+    SysFeeDeductionRecordMapper sysFeeDeductionRecordMapper;
 
     @Override
     public ResponseResult set(SetupPosRate setupPosRate) {
@@ -88,17 +92,6 @@ public class SetupPosRateServiceImpl implements SetupPosRateService {
             merchReq.setSimCharge(setupPosRate.getSimCharge());
         }
 
-        if (setupPosRate.getPosCharge() != null && !setupPosRate.getPosCharge().isEmpty()) {
-            merchReq.setPosCharge(setupPosRate.getPosCharge());
-        }
-
-        if (setupPosRate.getVipCharge() != null && !setupPosRate.getVipCharge().isEmpty()) {
-            merchReq.setVipCharge(setupPosRate.getVipCharge());
-        }
-
-        if (setupPosRate.getSmsSend() != null && !setupPosRate.getSmsSend().isEmpty()) {
-            merchReq.setSmsSend(setupPosRate.getSmsSend());
-        }
 
         merchReq.setSmsCode("0001");
 
@@ -108,6 +101,17 @@ public class SetupPosRateServiceImpl implements SetupPosRateService {
         } catch (IllegalAccessException e) {
             return new ResponseResult(400, "获取中付响应解码错误！");
         }
+
+/*        // --------------------
+
+        SysServiceChargeHistory sysServiceChargeHistory = new SysServiceChargeHistory();
+        sysServiceChargeHistory.setSnId(setupPosRate.getId());
+        sysServiceChargeHistory.setOptNo("6666666666666666");
+        sysServiceChargeHistory.setTraceNo(merchReq.getTraceNo());
+
+        return new ResponseResult(200, "设置成功！", sysServiceChargeHistory);
+        // --------------------*/
+
         String signStr = SignUtil.signByMap(EnvAndApiConstant.ENV_TEST_KEY, signMap);
         merchReq.setSign(signStr);
         String reqJsonStr = JSON.toJSONString(merchReq);
@@ -139,7 +143,7 @@ public class SetupPosRateServiceImpl implements SetupPosRateService {
         sysPosTerminal.setSimCharge(setupPosRate.getSimCharge());
         sysPosTerminalMapper.updateById(sysPosTerminal);
 
-        return new ResponseResult(200, "设置成功！");
+        return new ResponseResult(200, "设置成功！", sysServiceChargeHistory);
     }
 
     @Override

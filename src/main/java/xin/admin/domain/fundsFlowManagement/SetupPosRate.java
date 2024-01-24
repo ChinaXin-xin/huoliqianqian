@@ -11,8 +11,8 @@ public class SetupPosRate {
     private int id;
 
     // SIM服务费金额(元)(该参数如果传0代表不扣通信SIM费)
-    private String simCharge = "60";
-
+    //private String simCharge = "60";
+    private String simCharge = "0";
     // VIP会员服务费金额(元)(该参数如果传0代表不扣VIP会员费)
     private String vipCharge = "0";
 

@@ -121,6 +121,8 @@ public class CommercialTenantOrderZFServiceImpl implements CommercialTenantOrder
                 //根据交易流水进行分润
                 userService.shareBenefit(ctoz);
 
+/*
+                扣押金的，以前以为是扣服务费的
                 try {
                     QueryWrapper<SysPosTerminal> qw = new QueryWrapper<>();
                     qw.eq("machine_no", ctoz.getTermSn());
@@ -148,22 +150,27 @@ public class CommercialTenantOrderZFServiceImpl implements CommercialTenantOrder
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
+*/
 
                 //保存交易流水
                 commercialTenantOrderZFMapper.insert(ctoz);
 
                 // 更新大屏幕的数据
-                NotificationSSEServiceImpl.data.setHistoricalTransactionVolume(
-                        NotificationSSEServiceImpl.data.getHistoricalTransactionVolume().add(
+                NotificationSSEController.data.setHistoricalTransactionVolume(
+                        NotificationSSEController.data.getHistoricalTransactionVolume().add(
                                 ctoz.getAmount().divide(new BigDecimal("100"))));
 
-                NotificationSSEServiceImpl.data.setHistoricalTransactionCount(NotificationSSEServiceImpl.data.getHistoricalTransactionCount() + 1);
+                NotificationSSEController.data.setHistoricalTransactionCount(NotificationSSEController.data.getHistoricalTransactionCount() + 1);
 
                 // 设置今日交易金额
-                NotificationSSEServiceImpl.data.setTodayTransactionAmount(commercialTenantOrderZFMapper.sumAmountToday().divide(new BigDecimal("100")));
-
+                BigDecimal sumAmountToday = commercialTenantOrderZFMapper.sumAmountToday();
+                if (sumAmountToday == null || sumAmountToday.equals(BigDecimal.ZERO)) {
+                    NotificationSSEController.data.setTodayTransactionAmount(BigDecimal.ZERO);
+                } else {
+                    NotificationSSEController.data.setTodayTransactionAmount(sumAmountToday.divide(new BigDecimal("100")));
+                }
                 // 设置今日交易笔数
-                NotificationSSEServiceImpl.data.setTodayTransactionCount(commercialTenantOrderZFMapper.sumCountToday().intValue());
+                NotificationSSEController.data.setTodayTransactionCount(commercialTenantOrderZFMapper.sumCountToday().intValue());
 
                 notificationSSEController.sendNotification();
             }
