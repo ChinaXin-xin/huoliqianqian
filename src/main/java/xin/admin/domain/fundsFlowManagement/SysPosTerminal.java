@@ -27,7 +27,7 @@ public class SysPosTerminal {
     @TableField(exist = false)
     private String phone;  //根据uid查出来的
 
-    private String machineNo; // 编号
+    private String machineNo; // 编号sn
 
     private Date createTime; // 添加时间
 

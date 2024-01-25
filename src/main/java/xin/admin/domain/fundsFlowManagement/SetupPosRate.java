@@ -12,12 +12,13 @@ public class SetupPosRate {
 
     // SIM服务费金额(元)(该参数如果传0代表不扣通信SIM费)
     //private String simCharge = "60";
-    private String simCharge = "0";
+    private String simCharge;
+
     // VIP会员服务费金额(元)(该参数如果传0代表不扣VIP会员费)
-    private String vipCharge = "0";
+    private String vipCharge;
 
     // POS服务费金额(元)(该参数如果传0代表不扣POS服务费)
-    private String posCharge = "0";
+    private String posCharge;
 
     // 是否发送短信(1发送 0不发送)注:当前只允许传1发送
     private String smsSend;

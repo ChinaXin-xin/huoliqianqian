@@ -110,7 +110,7 @@
         AND spt.uid != 100
     </select>
 
-    <select id="selectByMachineNo" resultType="java.lang.Integer">
+    <select id="selectByMachineNoCount" resultType="java.lang.Integer">
         select COUNT(*) from sys_pos_terminal where machine_no=#{machineNo}
     </select>
     <select id="selectByMachineNoMsg" resultType="xin.common.domain.User">

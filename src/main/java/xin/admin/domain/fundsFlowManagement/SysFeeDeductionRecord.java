@@ -65,4 +65,28 @@ public class SysFeeDeductionRecord {
      * 交易状态 -
      */
     private String status;
+
+    /**
+     * 流量费，会员费，无感扣费的状态码
+     */
+    @TableField(exist = false)
+    private String coding;
+
+    /**
+     * 机具类型
+     */
+    @TableField(exist = false)
+    private String clazz;
+
+    /**
+     * 商户名
+     */
+    @TableField(exist = false)
+    private String merchantName;
+
+    /**
+     * 是否缴费
+     */
+    @TableField(exist = false)
+    private Boolean payOrNot;
 }

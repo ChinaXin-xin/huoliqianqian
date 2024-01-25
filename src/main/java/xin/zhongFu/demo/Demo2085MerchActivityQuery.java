@@ -48,5 +48,4 @@ public class Demo2085MerchActivityQuery {
 		System.out.println("商户活动记录返回查询返回数据:" + merchResp);
 		System.out.println("商户活动记录返回查询返回数据AMT:" + merchAmtResp.size());
 	}
-	
 }

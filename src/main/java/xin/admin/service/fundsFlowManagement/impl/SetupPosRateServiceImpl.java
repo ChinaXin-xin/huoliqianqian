@@ -77,9 +77,6 @@ public class SetupPosRateServiceImpl implements SetupPosRateService {
         // 查询对应sn编码的pos机
         merchReq.setSn(sysPosTerminal.getMachineNo());
 
-        System.out.println("商户号：" + merchReq.getMerchId());
-        System.out.println("sn：" + merchReq.getSn());
-
         if (setupPosRate.getPosCharge() != null && !setupPosRate.getPosCharge().isEmpty()) {
             merchReq.setPosCharge(setupPosRate.getPosCharge());
         }
@@ -102,17 +99,16 @@ public class SetupPosRateServiceImpl implements SetupPosRateService {
             return new ResponseResult(400, "获取中付响应解码错误！");
         }
 
-/*        // --------------------
-
+        // --------------------
         SysServiceChargeHistory sysServiceChargeHistory = new SysServiceChargeHistory();
         sysServiceChargeHistory.setSnId(setupPosRate.getId());
         sysServiceChargeHistory.setOptNo("6666666666666666");
         sysServiceChargeHistory.setTraceNo(merchReq.getTraceNo());
 
         return new ResponseResult(200, "设置成功！", sysServiceChargeHistory);
-        // --------------------*/
+        // --------------------
 
-        String signStr = SignUtil.signByMap(EnvAndApiConstant.ENV_TEST_KEY, signMap);
+/*        String signStr = SignUtil.signByMap(EnvAndApiConstant.ENV_TEST_KEY, signMap);
         merchReq.setSign(signStr);
         String reqJsonStr = JSON.toJSONString(merchReq);
 
@@ -143,7 +139,7 @@ public class SetupPosRateServiceImpl implements SetupPosRateService {
         sysPosTerminal.setSimCharge(setupPosRate.getSimCharge());
         sysPosTerminalMapper.updateById(sysPosTerminal);
 
-        return new ResponseResult(200, "设置成功！", sysServiceChargeHistory);
+        return new ResponseResult(200, "设置成功！", sysServiceChargeHistory);*/
     }
 
     @Override

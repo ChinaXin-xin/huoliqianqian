@@ -30,7 +30,7 @@ public interface SysPosTerminalMapper extends BaseMapper<SysPosTerminal> {
 
     int deleteByMachineNo(@Param("machineNo") String machineNo, @Param("clazz") String clazz);
 
-    int selectByMachineNo(@Param("machineNo") String machineNo);
+    int selectByMachineNoCount(@Param("machineNo") String machineNo);
 
     /**
      * @param machineNo

@@ -6,21 +6,21 @@ import org.aspectj.lang.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import xin.admin.domain.ResponseResult;
-import xin.admin.domain.fundsFlowManagement.SetupPosRate;
 import xin.admin.domain.fundsFlowManagement.SysFeeDeductionRecord;
 import xin.admin.domain.fundsFlowManagement.SysPosTerminal;
 import xin.admin.domain.fundsFlowManagement.SysServiceChargeHistory;
 import xin.admin.mapper.fundsFlowManagement.SysFeeDeductionRecordMapper;
 import xin.admin.mapper.fundsFlowManagement.SysPosTerminalMapper;
+import xin.zhongFu.model.resp.MerchFeeQueryResp;
 
 import java.util.Date;
 
 /**
- * 用于记录：流量费，会员费，押金的设置记录
+ * 用于记录设置无感押金
  */
 @Aspect
 @Component
-public class SysFeeDeductionRecordAspect {
+public class SysD0FeeSetRecordAspect {
 
     SysFeeDeductionRecord sysFeeDeductionRecord;
 
@@ -31,7 +31,7 @@ public class SysFeeDeductionRecordAspect {
     SysFeeDeductionRecordMapper sysFeeDeductionRecordMapper;
 
     // 定义切入点，指向 SetupPosRateService 的 set 方法
-    @Pointcut("execution(* xin.admin.service.fundsFlowManagement.SetupPosRateService.set(..))")
+    @Pointcut("execution(* xin.admin.service.fundsFlowManagement.UnifiedChargingService.setAssignPosD0SingleCashDrawal(..))")
     public void setPointcut() {
         // 切入点定义
     }
@@ -43,29 +43,22 @@ public class SysFeeDeductionRecordAspect {
         sysFeeDeductionRecord = new SysFeeDeductionRecord();
 
         Object[] args = joinPoint.getArgs(); // 获取所有原始参数
-        if (args != null && args.length > 0 && args[0] instanceof SetupPosRate) {
-
+        if (args != null && args.length > 0 && args[0] instanceof MerchFeeQueryResp) {
             // 原始参数
-            SetupPosRate setupPosRate = (SetupPosRate) args[0];
+            MerchFeeQueryResp merchFeeQueryResp = (MerchFeeQueryResp) args[0];
+            Boolean status = (Boolean) args[1];
 
-            System.out.println("前置通知：SetupPosRate 参数为：" + setupPosRate);
+            System.out.println("前置通知：SetupPosRate 参数为：" + merchFeeQueryResp + "  " + status);
 
-            if (setupPosRate.getPosCharge() != null && !setupPosRate.getPosCharge().isEmpty() && !setupPosRate.getPosCharge().equals("0")) {
-                sysFeeDeductionRecord.setType("押金");
-                sysFeeDeductionRecord.setAmount(setupPosRate.getPosCharge());
+            if (status) {
+                sysFeeDeductionRecord.setType("D0手续费费率(%)");
+                sysFeeDeductionRecord.setAmount(merchFeeQueryResp.getD0FeeRate());
+            }else {
+                sysFeeDeductionRecord.setType("D0单笔提现(元)");
+                sysFeeDeductionRecord.setAmount(merchFeeQueryResp.getD0SingleCashDrawal());
             }
 
-            if (setupPosRate.getVipCharge() != null && !setupPosRate.getVipCharge().isEmpty() && !setupPosRate.getVipCharge().equals("0")) {
-                sysFeeDeductionRecord.setType("会员");
-                sysFeeDeductionRecord.setAmount(setupPosRate.getVipCharge());
-            }
-
-            if (setupPosRate.getSimCharge() != null && !setupPosRate.getSimCharge().isEmpty() && !setupPosRate.getSimCharge().equals("0")) {
-                sysFeeDeductionRecord.setType("流量");
-                sysFeeDeductionRecord.setAmount(setupPosRate.getSimCharge());
-            }
-
-            SysPosTerminal sysPosTerminal = sysPosTerminalMapper.selectById(setupPosRate.getId());
+            SysPosTerminal sysPosTerminal = sysPosTerminalMapper.selectById(merchFeeQueryResp.getPosId());
             if (sysPosTerminal == null) {
                 sysFeeDeductionRecord.setPos("未找到");
             } else {
@@ -82,11 +75,6 @@ public class SysFeeDeductionRecordAspect {
             SysServiceChargeHistory sysServiceChargeHistory = (SysServiceChargeHistory) resResult.getData();
             sysFeeDeductionRecord.setStatus("成功");
             sysFeeDeductionRecord.setTransactionTime(new Date());
-            // 操作号
-            sysFeeDeductionRecord.setOperatorNumber(sysServiceChargeHistory.getOptNo());
-
-            // 流水号
-            sysFeeDeductionRecord.setSerialNumber(sysServiceChargeHistory.getTraceNo());
         } else {
             sysFeeDeductionRecord.setStatus("失败");
             sysFeeDeductionRecord.setTransactionTime(new Date());

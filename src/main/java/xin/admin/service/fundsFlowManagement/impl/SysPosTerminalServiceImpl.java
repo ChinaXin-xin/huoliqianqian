@@ -73,7 +73,7 @@ public class SysPosTerminalServiceImpl implements SysPosTerminalService {
             spt.setVer(sysPosTerminalAdd.getVer());
             spt.setCreateTime(new Date());
             spt.setUpdateTime(new Date());
-            if (!(sysPosTerminalMapper.selectByMachineNo(sn) >= 1)) {
+            if (!(sysPosTerminalMapper.selectByMachineNoCount(sn) >= 1)) {
                 sysPosTerminalMapper.insert(spt);
                 count++;
             }
@@ -87,7 +87,7 @@ public class SysPosTerminalServiceImpl implements SysPosTerminalService {
             return new ResponseResult(400, "请求参数错误！");
         }
 
-        if (sysPosTerminalMapper.selectByMachineNo(transfer.getSn()) == 0) {
+        if (sysPosTerminalMapper.selectByMachineNoCount(transfer.getSn()) == 0) {
             return new ResponseResult(400, "转出的sn不存在！");
         }
 
@@ -142,7 +142,7 @@ public class SysPosTerminalServiceImpl implements SysPosTerminalService {
         String[] strings = transfer.generateSerialNumbers(); //sn吗的集合
         int count = 0;
         for (String sn : strings) {
-            if (sysPosTerminalMapper.selectByMachineNo(sn) >= 1) {
+            if (sysPosTerminalMapper.selectByMachineNoCount(sn) >= 1) {
                 try {
                     Date curDate = new Date();
 
@@ -188,7 +188,7 @@ public class SysPosTerminalServiceImpl implements SysPosTerminalService {
             return new ResponseResult(400, "请求参数错误！");
         }
 
-        if (sysPosTerminalMapper.selectByMachineNo(transfer.getSn()) == 0) {
+        if (sysPosTerminalMapper.selectByMachineNoCount(transfer.getSn()) == 0) {
             return new ResponseResult(400, "请求参数错误，SN不存在！");
         }
 

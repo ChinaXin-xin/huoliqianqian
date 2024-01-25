@@ -23,9 +23,11 @@ public class MerchFeeEditReq extends BaseReq {
 	private String ycFreeFeeRate;
 	
 	private String ydFreeFeeRate;
-	
+
+	// D0手续费费率(%)
 	private String d0FeeRate;
-	
+
+	// D0单笔提现(元)
 	private String d0SingleCashDrawal;
 	
 }

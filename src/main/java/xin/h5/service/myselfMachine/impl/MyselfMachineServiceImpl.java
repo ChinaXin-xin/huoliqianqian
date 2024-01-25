@@ -172,7 +172,7 @@ public class MyselfMachineServiceImpl implements MyselfMachineService {
         String[] strings = transfer.getTransferList(); //sn吗的集合
         int count = 0;
         for (String sn : strings) {
-            if (sysPosTerminalMapper.selectByMachineNo(sn) >= 1) {
+            if (sysPosTerminalMapper.selectByMachineNoCount(sn) >= 1) {
                 try {
                     Date curDate = new Date();
 
@@ -289,7 +289,7 @@ public class MyselfMachineServiceImpl implements MyselfMachineService {
         int count = 0;
 
         //这个机器必须存在
-        if (sysPosTerminalMapper.selectByMachineNo(transfer.getSn()) >= 1) {
+        if (sysPosTerminalMapper.selectByMachineNoCount(transfer.getSn()) >= 1) {
             try {
                 Date curDate = new Date();
 
