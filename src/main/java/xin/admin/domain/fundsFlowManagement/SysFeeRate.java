@@ -24,4 +24,7 @@ public class SysFeeRate {
 
     // 费率
     private String feeRate;
+
+    // 收费间隔的天数
+    private Integer intervalDays;
 }

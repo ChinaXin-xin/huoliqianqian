@@ -27,7 +27,6 @@ import xin.zhongFu.utils.signutil.SignUtil;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Random;
 import java.util.TreeMap;
 
 @Slf4j
@@ -272,10 +271,120 @@ public class UnifiedChargingServiceImpl implements UnifiedChargingService {
         }
     }
 
+    @Override
+    public ResponseResult setD0FeeRateAndD0SingleCash(MerchFeeQueryResp param) {
+
+        if (param == null) {
+            return new ResponseResult(400, "请求参数错误！");
+        }
+
+        if (param.getD0FeeRate() == null && param.getD0SingleCashDrawal() == null) {
+            return new ResponseResult(400, "请求参数错误！");
+        }
+
+
+        // 统一费率
+        SysFeeRate sysFeeRate = new SysFeeRate();
+        QueryWrapper<SysFeeRate> sfQw = new QueryWrapper<>();
+        if (param.getD0FeeRate() != null) {
+            sfQw.eq("fee_rate_name", "D0手续费费率");
+            sysFeeRate.setFeeRate(param.getD0FeeRate());
+
+            // 更新系统配置，无感扣费手续费率
+            SysFeeRate sysFeeRateUpdate = new SysFeeRate();
+            sysFeeRateUpdate.setId(1);
+            sysFeeRateUpdate.setFeeRate(param.getD0FeeRate());
+            sysFeeRateMapper.updateById(sysFeeRateUpdate);
+        }
+
+        if (param.getD0SingleCashDrawal() != null) {
+            sfQw.eq("fee_rate_name", "D0单笔提现");
+            sysFeeRate.setFeeRate(param.getD0SingleCashDrawal());
+
+            // 更新系统配置，无感扣提现费
+            SysFeeRate sysFeeRateUpdate = new SysFeeRate();
+            sysFeeRateUpdate.setId(2);
+            sysFeeRateUpdate.setFeeRate(param.getD0SingleCashDrawal());
+            sysFeeRateMapper.updateById(sysFeeRateUpdate);
+        }
+
+        // 更新为最新的无感扣费
+        sysFeeRateMapper.update(sysFeeRate, sfQw);
+
+        QueryWrapper<SysPosTerminal> qw = new QueryWrapper<>();
+        qw.eq("type", "3");  // 查询已经激活的
+        List<SysPosTerminal> sysPosTerminalList = sysPosTerminalMapper.selectList(qw);
+        int succeed = 0;
+        for (SysPosTerminal spt : sysPosTerminalList) {
+            SysFeeDeductionRecord sysFeeDeductionRecord = new SysFeeDeductionRecord();
+
+            sysFeeDeductionRecord.setTransactionTime(new Date());
+            sysFeeDeductionRecord.setPos(spt.getMachineNo());
+
+            ResponseResult<MerchFeeQueryResp> merchFeeQueryRespResponseResult = getPosRate(spt.getMerchantId());
+            if (merchFeeQueryRespResponseResult.getCode() == 400) {
+                sysFeeDeductionRecord.setRemark("设置失败，未查询到该机器的费率信息！");
+                sysFeeDeductionRecord.setStatus("失败");
+                sysFeeDeductionRecordMapper.insert(sysFeeDeductionRecord);
+                continue;
+            }
+
+            // 查询原来的费率，原来的费率不变
+            MerchFeeEditReq nowFeeEditReq = convertToEditReq(merchFeeQueryRespResponseResult.getData());
+
+            if (param.getD0FeeRate() != null) {
+                // D0手续费费率(%)
+                PosFeeRate posFeeRate = posFeeRateMapper.selectByPosId(spt.getId(), 1);
+
+                // 如果没有自定义的
+                if (posFeeRate == null) {
+                    // 设置D0手续费费率(%)
+                    nowFeeEditReq.setD0FeeRate(param.getD0FeeRate());
+
+/*                    // 设置服务费
+                    if (setPosRate(spt.getMerchantId(), convertToEditReq(param)).getCode() == 200) {
+                        succeed++;
+                    }*/
+                }
+
+                sysFeeDeductionRecord.setType("D0手续费费率(%)");
+                sysFeeDeductionRecord.setAmount(param.getD0FeeRate());
+            }
+
+            if (param.getD0SingleCashDrawal() != null) {
+                PosFeeRate posFeeRate = posFeeRateMapper.selectByPosId(spt.getId(), 2);
+                // 如果没有自定义的
+                if (posFeeRate == null) {
+                    // D0单笔提现(元)
+                    nowFeeEditReq.setD0SingleCashDrawal(param.getD0SingleCashDrawal());
+
+/*                    // 设置服务费
+                    if (setPosRate(spt.getMerchantId(), convertToEditReq(param)).getCode() == 200) {
+                        succeed++;
+                    }*/
+                }
+
+                sysFeeDeductionRecord.setType("D0单笔提现(元)");
+                sysFeeDeductionRecord.setAmount(param.getD0SingleCashDrawal());
+            }
+
+            // 设置服务费
+            if (setPosRate(spt.getMerchantId(), nowFeeEditReq).getCode() == 200) {
+                succeed++;
+            }
+
+            sysFeeDeductionRecord.setStatus("成功");
+            sysFeeDeductionRecordMapper.insert(sysFeeDeductionRecord);
+
+        }
+
+        return new ResponseResult<>(200, String.format("设置成功：%d台，设置失败：%d台", succeed, sysPosTerminalList.size() - succeed));
+    }
+
     // 根据商家号，和费率，设置pos机的费率
     @Override
-    public ResponseResult<MerchFeeQueryResp> setPosRate(String merchId, MerchFeeEditReq merchReq) {
-/*        String reqUrl = EnvAndApiConstant.ENV_ADDR_TEST + EnvAndApiConstant.API_MERCH_FEE_EDIT;
+    public ResponseResult setPosRate(String merchId, MerchFeeEditReq merchReq) {
+        String reqUrl = EnvAndApiConstant.ENV_ADDR_TEST + EnvAndApiConstant.API_MERCH_FEE_EDIT;
 
         merchReq.setAgentId(EnvAndApiConstant.ENV_TEST_AGENT_ID);
         String tokeReqUrl = EnvAndApiConstant.ENV_ADDR_TEST + EnvAndApiConstant.API_TOKEN;
@@ -286,7 +395,7 @@ public class UnifiedChargingServiceImpl implements UnifiedChargingService {
             throw new RuntimeException(e);
         }
         merchReq.setToken(tokenInfo);
-
+        merchReq.setMerchId(merchId);
         TreeMap<String, Object> signMap = null;
         try {
             signMap = MapUtils.objToMap(merchReq);
@@ -305,9 +414,9 @@ public class UnifiedChargingServiceImpl implements UnifiedChargingService {
         if (respEntity.getCode().equals("00")) {
             return new ResponseResult<>(200, "设置成功！");
         } else {
-            return new ResponseResult<>(400, "设置失败！");
-        }*/
-        Random random = new Random();
+            return new ResponseResult<>(400, "设置失败！", respEntity.getMessage());
+        }
+/*        Random random = new Random();
         // 随机生成true或false
         boolean isSuccess = random.nextBoolean();
 
@@ -315,7 +424,7 @@ public class UnifiedChargingServiceImpl implements UnifiedChargingService {
             return new ResponseResult<>(200, "设置成功！");
         } else {
             return new ResponseResult<>(400, "设置失败！");
-        }
+        }*/
     }
 
     /**
@@ -377,9 +486,10 @@ public class UnifiedChargingServiceImpl implements UnifiedChargingService {
                 // 设置当前D0手续费
                 posFeeRate.setFeeRate(param.getD0FeeRate());
                 posFeeRateMapper.updateById(posFeeRate);
+                // 设置服务费
+                setPosRate(spt.getMerchantId(), convertToEditReq(param));
             }
         } else {
-
             PosFeeRate posFeeRate = posFeeRateMapper.selectByPosId(spt.getId(), 2);
             // 如果没有自定义的
             if (posFeeRate == null) {
@@ -398,9 +508,98 @@ public class UnifiedChargingServiceImpl implements UnifiedChargingService {
                 // D0单笔提现(元)
                 posFeeRate.setFeeRate(param.getD0SingleCashDrawal());
                 posFeeRateMapper.updateById(posFeeRate);
+                // 设置服务费
+                setPosRate(spt.getMerchantId(), convertToEditReq(param));
             }
         }
         return new ResponseResult<>(200, "设置成功！");
+    }
+
+    @Override
+    public ResponseResult setAssignPosD0SingleCashDrawalOrD0FeeRate(MerchFeeQueryResp param) {
+
+        if (param == null) {
+            return new ResponseResult(400, "请求参数错误！");
+        }
+
+        if (param.getD0FeeRate() == null && param.getD0SingleCashDrawal() == null) {
+            return new ResponseResult(400, "请求参数错误！");
+        }
+
+        SysPosTerminal spt = sysPosTerminalMapper.selectById(param.getPosId());
+
+        if (spt == null || !spt.getType().equals("3")) {
+            return new ResponseResult<>(400, "设置失败，未找到机器或者机器未激活");
+        }
+
+        ResponseResult<MerchFeeQueryResp> merchFeeQueryRespResponseResult = getPosRate(spt.getMerchantId());
+        if (merchFeeQueryRespResponseResult.getCode() == 400) {
+            return new ResponseResult<>(400, "设置失败，在中付未找到对应费率信息");
+        }
+
+        // 查询原来的费率，原来的费率不变
+        MerchFeeEditReq nowFeeEditReq = convertToEditReq(merchFeeQueryRespResponseResult.getData());
+
+        // 如果没有自定义的
+        if (param.getD0FeeRate() != null) {
+            // D0手续费费率(%)
+            PosFeeRate posFeeRated0FeeRate = posFeeRateMapper.selectByPosId(spt.getId(), 1);
+            if (posFeeRated0FeeRate == null) {
+                // 设置D0手续费费率(%)
+                nowFeeEditReq.setD0FeeRate(param.getD0FeeRate());
+
+/*                // 设置服务费
+                setPosRate(spt.getMerchantId(), nowFeeEditReq);*/
+
+                posFeeRated0FeeRate = new PosFeeRate();
+                posFeeRated0FeeRate.setPosId(spt.getId().longValue());
+                posFeeRated0FeeRate.setSysFeeRateId(1);
+                // 设置当前D0手续费
+                posFeeRated0FeeRate.setFeeRate(param.getD0FeeRate());
+                posFeeRateMapper.insert(posFeeRated0FeeRate);
+            } else {
+
+                // 设置D0手续费费率(%)
+                nowFeeEditReq.setD0FeeRate(param.getD0FeeRate());
+
+                // 设置当前D0手续费
+                posFeeRated0FeeRate.setFeeRate(param.getD0FeeRate());
+                posFeeRateMapper.updateById(posFeeRated0FeeRate);
+
+                /*                // 设置服务费
+                setPosRate(spt.getMerchantId(), nowFeeEditReq);*/
+
+            }
+        }
+
+        if (param.getD0SingleCashDrawal() != null) {
+            PosFeeRate posFeeRated0SingleCashDrawal = posFeeRateMapper.selectByPosId(spt.getId(), 2);
+            // 如果没有自定义的
+            if (posFeeRated0SingleCashDrawal == null) {
+                // D0单笔提现(元)
+                nowFeeEditReq.setD0SingleCashDrawal(param.getD0SingleCashDrawal());
+
+/*                // 设置服务费
+                setPosRate(spt.getMerchantId(), nowFeeEditReq);*/
+
+                posFeeRated0SingleCashDrawal = new PosFeeRate();
+                posFeeRated0SingleCashDrawal.setPosId(spt.getId().longValue());
+                posFeeRated0SingleCashDrawal.setSysFeeRateId(2);
+                posFeeRated0SingleCashDrawal.setFeeRate(param.getD0SingleCashDrawal());
+                posFeeRateMapper.insert(posFeeRated0SingleCashDrawal);
+            } else {
+
+                // D0单笔提现(元)
+                nowFeeEditReq.setD0SingleCashDrawal(param.getD0SingleCashDrawal());
+
+                // D0单笔提现(元)
+                posFeeRated0SingleCashDrawal.setFeeRate(param.getD0SingleCashDrawal());
+                posFeeRateMapper.updateById(posFeeRated0SingleCashDrawal);
+/*                // 设置服务费
+                setPosRate(spt.getMerchantId(), nowFeeEditReq);*/
+            }
+        }
+        return setPosRate(spt.getMerchantId(), nowFeeEditReq);
     }
 
     @Override
@@ -412,8 +611,9 @@ public class UnifiedChargingServiceImpl implements UnifiedChargingService {
         if (sysPosTerminal == null || !sysPosTerminal.getType().equals("3")) {
             return new ResponseResult<>(400, "未找到机器或者机器未激活！");
         }
-
-        return getPosRate(sysPosTerminal.getMerchantId());
+        ResponseResult<MerchFeeQueryResp> result = getPosRate(sysPosTerminal.getMerchantId());
+        result.getData().setPosId(sysPosTerminal.getId());
+        return result;
     }
 
     @Override

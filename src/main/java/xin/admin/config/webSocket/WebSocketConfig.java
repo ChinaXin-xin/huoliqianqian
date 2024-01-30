@@ -13,7 +13,7 @@ public class WebSocketConfig implements WebSocketConfigurer {
  
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry webSocketHandlerRegistry) {
-        webSocketHandlerRegistry.addHandler(new ChatMessageHandler(), "/wws/webSocket/test");
+        webSocketHandlerRegistry.addHandler(new ChatMessageHandler(), "/wss/webSocket/test");
     }
 
 

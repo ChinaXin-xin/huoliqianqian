@@ -87,6 +87,5 @@ public class SysFeeDeductionRecord {
     /**
      * 是否缴费
      */
-    @TableField(exist = false)
     private Boolean payOrNot;
 }

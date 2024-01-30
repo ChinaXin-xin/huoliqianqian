@@ -24,7 +24,7 @@ public class Prod2062MerchFeeQuery {
 		String tokeReqUrl = EnvAndApiConstant.ENV_ADDR_TEST+EnvAndApiConstant.API_TOKEN;
 		String tokenInfo = TestGetTokenDemo.getToken(tokeReqUrl,EnvAndApiConstant.ENV_TEST_AGENT_ID, TokenTypeConstant.TOKEN_TYPE_2062,EnvAndApiConstant.ENV_TEST_KEY);
 		merchReq.setToken(tokenInfo);
-		merchReq.setMerchId("748000000124073");
+		merchReq.setMerchId("748000000123948");
 		
 		TreeMap<String, Object> signMap = MapUtils.objToMap(merchReq);
 		String signStr = SignUtil.signByMap(EnvAndApiConstant.ENV_TEST_KEY,signMap);

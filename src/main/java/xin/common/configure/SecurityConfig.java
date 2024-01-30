@@ -87,6 +87,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.POST, "/admin/h2").permitAll()
                 .antMatchers( "/admin/h2").permitAll()
 
+                .antMatchers("/wss/webSocket/**").permitAll()
+
                 .antMatchers("/admin/register").anonymous()
                 .anyRequest().authenticated()  // 其他所有请求都需要认证
                 .and()

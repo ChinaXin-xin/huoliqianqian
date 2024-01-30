@@ -32,8 +32,8 @@ public class Demo2061MerchFeeEdit {
 		merchReq.setAlipayFeeRate("0.57");
 		merchReq.setYcFreeFeeRate("0.58");
 		merchReq.setYdFreeFeeRate("0.59");
-		merchReq.setD0FeeRate("0.1");
-		merchReq.setD0SingleCashDrawal("0.5");
+		merchReq.setD0FeeRate("0.07");
+		merchReq.setD0SingleCashDrawal("0.7");
 		
 		TreeMap<String, Object> signMap = MapUtils.objToMap(merchReq);
 		String signStr = SignUtil.signByMap(EnvAndApiConstant.ENV_TEST_KEY,signMap);

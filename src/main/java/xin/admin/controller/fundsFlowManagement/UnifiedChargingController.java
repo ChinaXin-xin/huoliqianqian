@@ -63,6 +63,20 @@ public class UnifiedChargingController {
 
     /**
      * 同一收设置：D0手续费费率
+     * 同一收设置：D0单笔提现元（单笔交易服务费）
+     * 两个结合了
+     * 3%为：0.03
+     *
+     * @param merchFeeQueryResp
+     * @return
+     */
+    @PostMapping("/setD0FeeRateAndD0SingleCash")
+    public ResponseResult setD0FeeRateAndD0SingleCash(@RequestBody MerchFeeQueryResp merchFeeQueryResp) {
+        return unifiedChargingService.setD0FeeRateAndD0SingleCash(merchFeeQueryResp);
+    }
+
+    /**
+     * 同一收设置：D0手续费费率
      * 3%为：0.03
      *
      * @param merchFeeQueryResp
@@ -87,13 +101,23 @@ public class UnifiedChargingController {
 
     /**
      * 设置某个pos机的D0手续费费率(%)
-     *
      * @param merchFeeQueryResp
      * @return
      */
     @PostMapping("/setAssignPosD0FeeRate")
     public ResponseResult setAssignPosD0FeeRate(@RequestBody MerchFeeQueryResp merchFeeQueryResp) {
         return unifiedChargingService.setAssignPosD0SingleCashDrawal(merchFeeQueryResp, true);
+    }
+
+    /**
+     * 设置某个pos机的D0手续费费率(%)设置某个pos机的D0单笔提现元（单笔交易服务费）
+     * setD0SingleCashDrawalOrD0FeeRate()和setD0FeeRate()的结合体
+     * @param merchFeeQueryResp
+     * @return
+     */
+    @PostMapping("/setAssignPosD0SingleCashDrawalOrD0FeeRate")
+    public ResponseResult setAssignPosD0SingleCashDrawalOrD0FeeRate(@RequestBody MerchFeeQueryResp merchFeeQueryResp) {
+        return unifiedChargingService.setAssignPosD0SingleCashDrawalOrD0FeeRate(merchFeeQueryResp);
     }
 
     /**

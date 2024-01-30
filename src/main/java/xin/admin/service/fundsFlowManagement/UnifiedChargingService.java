@@ -1,6 +1,5 @@
 package xin.admin.service.fundsFlowManagement;
 
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import xin.admin.domain.ResponseResult;
 import xin.admin.domain.fundsFlowManagement.SetupPosRate;
@@ -16,6 +15,8 @@ public interface UnifiedChargingService {
 
     ResponseResult setD0SingleCashDrawalOrD0FeeRate(MerchFeeQueryResp merchFeeEditReq, Boolean status);
 
+    ResponseResult setD0FeeRateAndD0SingleCash(MerchFeeQueryResp merchFeeQueryResp);
+
     // 根据商家号，查询pos机的费率
     ResponseResult<MerchFeeQueryResp> getPosRate(String merchId);
 
@@ -23,6 +24,8 @@ public interface UnifiedChargingService {
     ResponseResult<MerchFeeQueryResp> setPosRate(String merchId, MerchFeeEditReq merchFeeEditReq);
 
     ResponseResult setAssignPosD0SingleCashDrawal(MerchFeeQueryResp merchFeeQueryResp, Boolean status);
+
+    ResponseResult setAssignPosD0SingleCashDrawalOrD0FeeRate(MerchFeeQueryResp merchFeeQueryResp);
 
     ResponseResult selectByPosIdToFeeRate(Integer posId);
 }

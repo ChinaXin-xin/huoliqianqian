@@ -2,8 +2,6 @@ package xin.admin.service.fundsFlowManagement.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,10 +24,8 @@ import xin.zhongFu.utils.HttpRestTempUtils;
 import xin.zhongFu.utils.MapUtils;
 import xin.zhongFu.utils.signutil.SignUtil;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class SysFeeDeductionRecordServiceImpl extends ServiceImpl<SysFeeDeductionRecordMapper, SysFeeDeductionRecord> implements SysFeeDeductionRecordService {
@@ -43,31 +39,38 @@ public class SysFeeDeductionRecordServiceImpl extends ServiceImpl<SysFeeDeductio
         Map<String, MerchActivityQueryResp> map = new HashMap<>();
 
         // 进行查询
+
         List<SysFeeDeductionRecord> allList = this.list();
 
+        // 对allList按照id进行降序排序
+        allList = allList.stream()
+                .sorted(Comparator.comparing(SysFeeDeductionRecord::getId).reversed())
+                .collect(Collectors.toList());
 
-        // 设置所属人等信息
-        for (SysFeeDeductionRecord record : allList) {
+        // 查询是否缴费的所有
+        for (SysFeeDeductionRecord resRecord : allList) {
+
             QueryWrapper<SysPosTerminal> sptQw = new QueryWrapper<>();
-            sptQw.eq("machine_no", record.getPos());
+            sptQw.eq("machine_no", resRecord.getPos());
             SysPosTerminal spt = sysPosTerminalMapper.selectOne(sptQw);
             if (spt == null) {
                 continue;
             }
-            record.setClazz(spt.getClazz());
-            record.setMerchantName(spt.getMerchantName());
-            if (record.getType().equals("流量")) {
-                record.setCoding("1");
-            } else if (record.getType().equals("押金")) {
-                record.setCoding("2");
-            } else if (record.getType().equals("会员")) {
-                record.setCoding("3");
-            } else if (record.getType().equals("D0单笔提现(元)")) {
-                record.setCoding("4");
-            } else if (record.getType().equals("D0手续费费率(%)")) {
-                record.setCoding("5");
+
+            resRecord.setClazz(spt.getClazz());
+            resRecord.setMerchantName(spt.getMerchantName());
+            if (resRecord.getType().equals("流量")) {
+                resRecord.setCoding("1");
+            } else if (resRecord.getType().equals("押金")) {
+                resRecord.setCoding("2");
+            } else if (resRecord.getType().equals("会员")) {
+                resRecord.setCoding("3");
+            } else if (resRecord.getType().equals("D0单笔提现(元)")) {
+                resRecord.setCoding("4");
+            } else if (resRecord.getType().equals("D0手续费费率(%)")) {
+                resRecord.setCoding("5");
             } else {
-                record.setCoding("-1");
+                resRecord.setCoding("-1");
             }
 
             // 如果不存在这个用户的缴费记录
@@ -75,146 +78,132 @@ public class SysFeeDeductionRecordServiceImpl extends ServiceImpl<SysFeeDeductio
                 map.put(spt.getMerchantId(), queryPayOrNot(spt));
             }
 
-            record.setPayOrNot(false);
-
-            if (!(record.getCoding().equals("1") || record.getCoding().equals("2") || record.getCoding().equals("3"))) {
+            // 流量费，会员费，押金，只有这三个才有流水号能查询
+            if (!(resRecord.getCoding().equals("1") || resRecord.getCoding().equals("2") || resRecord.getCoding().equals("3"))) {
                 continue;
             }
 
-            // 判断是否缴费
-            MerchActivityQueryResp merchActivityQueryResp = map.get(spt.getMerchantId());
-
-            for (MerchActivityAmtResp maa : merchActivityQueryResp.getAmtList()) {
-
-                // 判断流水号与操作号是否相同
-                if (record.getSerialNumber().equals(maa.getTraceNo())
-                        && record.getOperatorNumber().equals(maa.getOptNo())) {
-                    if (maa.getMerchPayStatus().equals("1")) {
-                        record.setPayOrNot(true);
-                    }
-                }
-            }
-        }
-
-        // 设置返回结果
-        query.setResultList(resultList);
-        query.setCount(resultPage.getTotal());
-
-        return new ResponseResult(200, "查询成功！", query);
-    }
-
-
-/*
-    @Override
-    public ResponseResult<CommonalityQuery<SysFeeDeductionRecord>> selectList(CommonalityQuery<SysFeeDeductionRecord> query) {
-
-        Map<String, MerchActivityQueryResp> map = new HashMap<>();
-
-        // 创建分页对象
-        Page<SysFeeDeductionRecord> page = new Page<>(query.getPageNumber(), query.getQuantity());
-
-        // 创建查询包装器
-        QueryWrapper<SysFeeDeductionRecord> qw = new QueryWrapper<>();
-        qw.orderByDesc("id");
-        // 检查query.getQuery()是否不为空，如果不为空，则进行条件查询
-        SysFeeDeductionRecord condition = query.getQuery();
-        if (condition != null) {
-            // 根据字段进行模糊查询
-            if (condition.getId() != null) {
-                qw.eq("id", condition.getId());
-            }
-            if (condition.getAmount() != null) {
-                qw.like("amount", condition.getAmount());
-            }
-            if (condition.getType() != null) {
-                qw.like("type", condition.getType());
-            }
-            if (condition.getPos() != null) {
-                qw.like("pos", condition.getPos());
-            }
-            if (condition.getRemark() != null) {
-                qw.like("remark", condition.getRemark());
-            }
-            if (condition.getSerialNumber() != null) {
-                qw.like("serial_number", condition.getSerialNumber());
-            }
-            if (condition.getOperatorNumber() != null) {
-                qw.like("operator_number", condition.getOperatorNumber());
-            }
-            if (condition.getStatus() != null) {
-                qw.like("status", condition.getStatus());
-            }
-
-            // 检查时间范围条件
-            if (condition.getStartTransactionTime() != null && condition.getEndTransactionTime() != null) {
-                qw.between("transaction_time", condition.getStartTransactionTime(), condition.getEndTransactionTime());
-            }
-        }
-
-        // 进行查询
-        IPage<SysFeeDeductionRecord> resultPage = this.page(page, qw);
-
-        List<SysFeeDeductionRecord> resultList = resultPage.getRecords();
-
-        // 设置所属人等信息
-        for (SysFeeDeductionRecord record : resultList) {
-            QueryWrapper<SysPosTerminal> sptQw = new QueryWrapper<>();
-            sptQw.eq("machine_no", record.getPos());
-            SysPosTerminal spt = sysPosTerminalMapper.selectOne(sptQw);
-            if (spt == null) {
+            // 如果已经缴费就不查询
+            if (resRecord.getPayOrNot() != null && resRecord.getPayOrNot()) {
                 continue;
-            }
-            record.setClazz(spt.getClazz());
-            record.setMerchantName(spt.getMerchantName());
-            if (record.getType().equals("流量")) {
-                record.setCoding("1");
-            } else if (record.getType().equals("押金")) {
-                record.setCoding("2");
-            } else if (record.getType().equals("会员")) {
-                record.setCoding("3");
-            } else if (record.getType().equals("D0单笔提现(元)")) {
-                record.setCoding("4");
-            } else if (record.getType().equals("D0手续费费率(%)")) {
-                record.setCoding("5");
             } else {
-                record.setCoding("-1");
-            }
-
-            // 如果不存在这个用户的缴费记录
-            if (!map.containsKey(spt.getMerchantId())) {
-                map.put(spt.getMerchantId(), queryPayOrNot(spt));
-            }
-
-            record.setPayOrNot(false);
-
-            if (!(record.getCoding().equals("1") || record.getCoding().equals("2") || record.getCoding().equals("3"))) {
-                continue;
+                resRecord.setPayOrNot(false);
             }
 
             // 判断是否缴费
             MerchActivityQueryResp merchActivityQueryResp = map.get(spt.getMerchantId());
 
             for (MerchActivityAmtResp maa : merchActivityQueryResp.getAmtList()) {
-
                 // 判断流水号与操作号是否相同
-                if (record.getSerialNumber().equals(maa.getTraceNo())
-                        && record.getOperatorNumber().equals(maa.getOptNo())) {
+                System.out.println(resRecord.getId() + "   " + resRecord.getSerialNumber() + "  " + resRecord.getOperatorNumber());
+                if (resRecord.getSerialNumber() == null || resRecord.getOperatorNumber() == null) {
+                    continue;
+                }
+                if (resRecord.getSerialNumber().equals(maa.getTraceNo())
+                        && resRecord.getOperatorNumber().equals(maa.getOptNo())) {
                     if (maa.getMerchPayStatus().equals("1")) {
-                        record.setPayOrNot(true);
+                        resRecord.setPayOrNot(true);
+                        this.baseMapper.updateById(resRecord);
                     }
                 }
             }
         }
 
-        // 设置返回结果
-        query.setResultList(resultList);
-        query.setCount(resultPage.getTotal());
 
+        // 初始化结果列表
+        List<SysFeeDeductionRecord> resultList = new ArrayList<>();
+        SysFeeDeductionRecord q = query.getQuery();
+
+        // 只有当查询对象q不为空时，才进行过滤
+        if (q != null) {
+            for (SysFeeDeductionRecord resRecord : allList) {
+                // 如果q中的merchantName为空字符串，则视为null
+                String qMerchantName = q.getMerchantName();
+                if (qMerchantName != null && qMerchantName.isEmpty()) {
+                    qMerchantName = null;
+                }
+
+                // 检查merchantName是否符合条件
+                boolean isMerchantNameMatch = (qMerchantName == null ||
+                        (resRecord.getMerchantName() != null && resRecord.getMerchantName().contains(qMerchantName)));
+
+                // 对其他字段执行类似处理
+                String qPos = q.getPos();
+                if (qPos != null && qPos.isEmpty()) {
+                    qPos = null;
+                }
+                boolean isPosMatch = (qPos == null ||
+                        resRecord.getPos().contains(qPos));
+
+                Boolean qPayOrNot = q.getPayOrNot();
+                if (qPayOrNot != null && qPayOrNot.toString().isEmpty()) {
+                    qPayOrNot = null;
+                }
+                boolean isPayOrNotMatch = (qPayOrNot == null ||
+                        qPayOrNot.equals(resRecord.getPayOrNot()));
+
+                String qCoding = q.getCoding();
+                if (qCoding != null && qCoding.isEmpty()) {
+                    qCoding = null;
+                }
+                boolean isCodingMatch = (qCoding == null ||
+                        qCoding.equals(resRecord.getCoding()));
+
+                String qStatus = q.getStatus();
+                if (qStatus != null && qStatus.isEmpty()) {
+                    qStatus = null;
+                }
+                boolean isStatusMatch = (qStatus == null ||
+                        qStatus.equals(resRecord.getStatus()));
+
+                // 处理日期字段
+                boolean isTransactionTimeMatch = (q.getStartTransactionTime() == null || q.getEndTransactionTime() == null ||
+                        (!resRecord.getTransactionTime().before(q.getStartTransactionTime()) &&
+                                !resRecord.getTransactionTime().after(q.getEndTransactionTime())));
+
+                // 如果所有条件都匹配，将此记录添加到结果列表中
+                if (isMerchantNameMatch && isPosMatch && isPayOrNotMatch && isCodingMatch && isStatusMatch && isTransactionTimeMatch) {
+                    resultList.add(resRecord);
+                }
+            }
+        }
+
+
+        int pageNumber = query.getPageNumber(); // 当前页码
+        int quantity = query.getQuantity(); // 每页显示的记录数
+        int totalSize = resultList.size(); // 总记录数
+
+        // 计算最大页数
+        int maxPageNumber = (totalSize + quantity - 1) / quantity;
+
+        // 检查请求的页码是否超过最大页数
+        if (pageNumber > maxPageNumber) {
+            // 如果超过了，返回空的结果集
+            query.setResultList(new ArrayList<>());
+        } else {
+            // 计算当前页的起始索引和结束索引
+            int startIndex = (pageNumber - 1) * quantity;
+            int endIndex = Math.min(startIndex + quantity, totalSize);
+
+            // 获取当前页的子列表
+            List<SysFeeDeductionRecord> pagedresultList = resultList.subList(startIndex, endIndex);
+
+            // 设置分页后的结果和数量
+            query.setResultList(pagedresultList);
+        }
+
+        query.setCount((long) resultList.size());
         return new ResponseResult(200, "查询成功！", query);
     }
-*/
 
-    private MerchActivityQueryResp queryPayOrNot(SysPosTerminal spt) {
+
+    /**
+     * 用于查询历史缴费记录
+     *
+     * @param spt
+     * @return
+     */
+    public static MerchActivityQueryResp queryPayOrNot(SysPosTerminal spt) {
         String reqUrl = EnvAndApiConstant.ENV_ADDR_TEST + EnvAndApiConstant.API_MERCH_ACTIVITY_QUERY;
 
         MerchActivityQueryReq merchReq = new MerchActivityQueryReq();

@@ -9,10 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import xin.admin.domain.ResponseResult;
-import xin.admin.domain.fundsFlowManagement.ServiceCharge;
-import xin.admin.domain.fundsFlowManagement.SetupPosRate;
-import xin.admin.domain.fundsFlowManagement.SysPosTerminal;
-import xin.admin.domain.fundsFlowManagement.SysServiceChargeHistory;
+import xin.admin.domain.fundsFlowManagement.*;
 import xin.admin.mapper.fundsFlowManagement.SysFeeDeductionRecordMapper;
 import xin.admin.mapper.fundsFlowManagement.SysPosTerminalMapper;
 import xin.admin.mapper.fundsFlowManagement.SysServiceChargeHistoryMapper;
@@ -22,10 +19,7 @@ import xin.zhongFu.constants.TokenTypeConstant;
 import xin.zhongFu.demo.TestGetTokenDemo;
 import xin.zhongFu.model.req.merchActivity.MerchCollectQueryReq;
 import xin.zhongFu.model.req.merchActivity.MerchCollectReq;
-import xin.zhongFu.model.resp.BaseRespEntity;
-import xin.zhongFu.model.resp.MerchCollectQueryResp;
-import xin.zhongFu.model.resp.MerchCollectResp;
-import xin.zhongFu.model.resp.RespCodeEnum;
+import xin.zhongFu.model.resp.*;
 import xin.zhongFu.utils.HttpRestTempUtils;
 import xin.zhongFu.utils.MapUtils;
 import xin.zhongFu.utils.signutil.SignUtil;
@@ -73,7 +67,6 @@ public class SetupPosRateServiceImpl implements SetupPosRateService {
         merchReq.setMerchId(sysPosTerminal.getMerchantId()); // pos商户号
         merchReq.setDirectAgentId(EnvAndApiConstant.ENV_TEST_AGENT_ID);
 
-
         // 查询对应sn编码的pos机
         merchReq.setSn(sysPosTerminal.getMachineNo());
 
@@ -86,6 +79,23 @@ public class SetupPosRateServiceImpl implements SetupPosRateService {
         }
 
         if (setupPosRate.getSimCharge() != null && !setupPosRate.getSimCharge().isEmpty()) {
+
+            SysFeeDeductionRecord record = sysFeeDeductionRecordMapper.queryRecentlyRecord(sysPosTerminal.getMachineNo());
+
+
+            MerchActivityQueryResp merchActivityQueryResp = SysFeeDeductionRecordServiceImpl.queryPayOrNot(sysPosTerminal);
+
+            for (MerchActivityAmtResp maa : merchActivityQueryResp.getAmtList()) {
+
+                // 判断流水号与操作号是否相同
+                if (record.getSerialNumber().equals(maa.getTraceNo()) && record.getOperatorNumber().equals(maa.getOptNo())) {
+                    // 已经缴费了
+                    if (maa.getMerchPayStatus().equals("0")) {
+                        return new ResponseResult(501, "该用户上一笔扣费未缴费");
+                    }
+                }
+            }
+
             merchReq.setSimCharge(setupPosRate.getSimCharge());
         }
 
@@ -99,16 +109,16 @@ public class SetupPosRateServiceImpl implements SetupPosRateService {
             return new ResponseResult(400, "获取中付响应解码错误！");
         }
 
-        // --------------------
+/*        // --------------------
         SysServiceChargeHistory sysServiceChargeHistory = new SysServiceChargeHistory();
         sysServiceChargeHistory.setSnId(setupPosRate.getId());
         sysServiceChargeHistory.setOptNo("6666666666666666");
         sysServiceChargeHistory.setTraceNo(merchReq.getTraceNo());
 
         return new ResponseResult(200, "设置成功！", sysServiceChargeHistory);
-        // --------------------
+        // --------------------*/
 
-/*        String signStr = SignUtil.signByMap(EnvAndApiConstant.ENV_TEST_KEY, signMap);
+        String signStr = SignUtil.signByMap(EnvAndApiConstant.ENV_TEST_KEY, signMap);
         merchReq.setSign(signStr);
         String reqJsonStr = JSON.toJSONString(merchReq);
 
@@ -139,7 +149,7 @@ public class SetupPosRateServiceImpl implements SetupPosRateService {
         sysPosTerminal.setSimCharge(setupPosRate.getSimCharge());
         sysPosTerminalMapper.updateById(sysPosTerminal);
 
-        return new ResponseResult(200, "设置成功！", sysServiceChargeHistory);*/
+        return new ResponseResult(200, "设置成功！", sysServiceChargeHistory);
     }
 
     @Override
